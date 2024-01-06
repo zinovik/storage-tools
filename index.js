@@ -16,29 +16,17 @@ const PATHS_TO_SAVE = [
 
 const storage = new Storage();
 
-const streamToString = (stream) => {
-    const chunks = [];
-
-    return new Promise((resolve, reject) => {
-        stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-        stream.on('error', (error) => reject(error));
-        stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
-    });
-};
-
 FILES.forEach(async (path) => {
     console.log(`Getting ${path}...`);
     const [bucketName, fileName] = path.split('/');
 
     const bucket = storage.bucket(bucketName);
-    const file = bucket.file(fileName);
-
-    const data = await streamToString(file.createReadStream());
+    const file = await bucket.file(fileName).download();
 
     PATHS_TO_SAVE.forEach((pathToSave) =>
         fs.writeFileSync(
             `${pathToSave}${fileName}`,
-            JSON.stringify(JSON.parse(data), null, 4)
+            JSON.stringify(JSON.parse(file.toString()), null, 4)
         )
     );
 
