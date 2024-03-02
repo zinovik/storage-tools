@@ -11,5 +11,8 @@
     "license": "ISC",
     "dependencies": {
         "@google-cloud/storage": "7.7.0"
+    },
+    "devDependencies": {
+        "stream-shift": "1.0.3"
     }
 }
