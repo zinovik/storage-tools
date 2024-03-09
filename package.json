@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node index.js",
-        "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node upload.js"
+        "upload": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node upload.js"
     },
     "author": "",
     "license": "ISC",

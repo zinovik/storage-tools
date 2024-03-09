@@ -1,8 +1,11 @@
 const fs = require('fs');
 const { Storage, TransferManager } = require('@google-cloud/storage');
 
-const DIRECTORY = 'photos';
-const BUCKET_NAME = 'hedgehogs';
+// const DIRECTORY = 'photos';
+const DIRECTORY = 'gigs';
+// const BUCKET_NAME = 'hedgehogs';
+const BUCKET_NAME = 'zinovik-gallery';
+
 const FILES_TO_SAVE = [
     'hedgehogs.json',
     'albums.json',
@@ -10,7 +13,7 @@ const FILES_TO_SAVE = [
     'sources-config.json',
     'digital-board-games.json',
 ];
-const FOLDERS_TO_SAVE = ['photos', 'zanzibar', 'test-folder'];
+const FOLDERS_TO_SAVE = ['photos', 'gigs'];
 
 const localFilenames = fs.readdirSync(DIRECTORY);
 
