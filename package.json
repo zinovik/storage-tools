@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node index.js",
-        "upload": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node upload.js"
+        "copy": "node tools/find-and-copy-files",
+        "upload": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node upload-files-to-bucket"
     },
     "author": "",
     "license": "ISC",

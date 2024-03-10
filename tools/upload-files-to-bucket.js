@@ -1,21 +1,46 @@
 const fs = require('fs');
 const { Storage, TransferManager } = require('@google-cloud/storage');
 
-// const DIRECTORY = 'photos';
-const DIRECTORY = 'gigs';
 // const BUCKET_NAME = 'hedgehogs';
+// const DIRECTORIES = ['photos'];
+
 const BUCKET_NAME = 'zinovik-gallery';
+const DIRECTORIES = [
+    'zanzibar',
+    'naliboki',
+    'sakartvelo',
+    'zalessie',
+    'sri-lanka',
+    'uzbekistan',
+    'berlin',
+    'netherlands',
+    'greece',
+    'football',
+    'gigs',
+    'board-games',
+];
 
 const FILES_TO_SAVE = [
     'hedgehogs.json',
     'albums.json',
     'files.json',
     'sources-config.json',
-    'digital-board-games.json',
 ];
-const FOLDERS_TO_SAVE = ['photos', 'gigs'];
-
-const localFilenames = fs.readdirSync(DIRECTORY);
+const FOLDERS_TO_SAVE = [
+    'photos',
+    'zanzibar',
+    'naliboki',
+    'sakartvelo',
+    'zalessie',
+    'sri-lanka',
+    'uzbekistan',
+    'berlin',
+    'netherlands',
+    'greece',
+    'football',
+    'gigs',
+    'board-games',
+];
 
 const storage = new Storage();
 const bucket = storage.bucket(BUCKET_NAME);
@@ -81,20 +106,27 @@ const removeNotCurrentFiles = async (bucket) => {
     const exitingFilenames = exitingFiles.map(
         (exitingFile) => exitingFile.name
     );
-    const filesToUpload = localFilenames
-        .map((file) => `${DIRECTORY}/${file}`)
-        .filter((file) => !exitingFilenames.includes(file));
 
-    if (filesToUpload.length === 0) return;
+    for (let i = 0; i < DIRECTORIES.length; i++) {
+        const directory = DIRECTORIES[i];
 
-    await transferManager.uploadManyFiles(filesToUpload, {
-        passthroughOptions: {
-            public: true,
-            metadata: {
-                cacheControl: 'public, max-age=31536000',
+        const localFilenames = fs.readdirSync(directory);
+
+        const filesToUpload = localFilenames
+            .map((file) => `${directory}/${file}`)
+            .filter((file) => !exitingFilenames.includes(file));
+
+        if (filesToUpload.length === 0) return;
+
+        await transferManager.uploadManyFiles(filesToUpload, {
+            passthroughOptions: {
+                public: true,
+                metadata: {
+                    cacheControl: 'public, max-age=31536000',
+                },
             },
-        },
-    });
+        });
+    }
 
     await removeNotCurrentFiles(bucket);
 })();

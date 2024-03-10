@@ -30,34 +30,55 @@ const DESTINATION_PATH = `/home/max/projects/private/backup-storage-files/tools`
         .split('\n')
         .map((filePath) => filePath.substring(filePath.indexOf(SOURCE_PATH)));
 
+    const errors = [];
+
     for (let i = 0; i < ALBUMS.length; i++) {
-        const albums = ALBUMS[i];
+        const album = ALBUMS[i];
 
         try {
-            await promisify(exec)(`mkdir tools/${albums}`);
+            await promisify(exec)(`mkdir tools/${album}`);
         } catch (error) {
             console.warn(error.message);
         }
 
+        const alreadyCopiedFiles = fs.readdirSync(`tools/${album}`);
+
         const filenames = files
-            .filter((file) => file.path.startsWith(albums))
+            .filter((file) => file.path.startsWith(album))
             .map((file) => file.filename);
 
         filenames.forEach((filename, index) => {
             console.log(
-                `[${albums}] File: ${index + 1}/${
+                `[${album}] File: ${index + 1}/${
                     filenames.length
                 } (${filename})`
             );
+
+            if (alreadyCopiedFiles.includes(filename)) {
+                console.log('SKIPPED! Already copied');
+                return;
+            }
 
             const currentFilePath = filePaths.find((filePath) =>
                 filePath.endsWith(filename)
             );
 
-            fs.copyFileSync(
-                currentFilePath,
-                `${DESTINATION_PATH}/${albums}/${filename}`
-            );
+            try {
+                fs.copyFileSync(
+                    currentFilePath,
+                    `${DESTINATION_PATH}/${album}/${filename}`
+                );
+            } catch (error) {
+                errors.push({
+                    filename,
+                    path: currentFilePath,
+                    message: error.message,
+                });
+            }
         });
     }
+
+    errors.forEach(({ filename, path, message }) =>
+        console.error(filename, path, message)
+    );
 })();
