@@ -10,6 +10,7 @@ const ALBUMS = [
     'zalessie',
     'sri-lanka',
     'uzbekistan',
+    'svaneti',
     'berlin',
     'netherlands',
     'greece',

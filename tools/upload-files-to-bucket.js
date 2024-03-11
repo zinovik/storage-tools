@@ -12,6 +12,7 @@ const DIRECTORIES = [
     'zalessie',
     'sri-lanka',
     'uzbekistan',
+    'svaneti',
     'berlin',
     'netherlands',
     'greece',
@@ -34,6 +35,7 @@ const FOLDERS_TO_SAVE = [
     'zalessie',
     'sri-lanka',
     'uzbekistan',
+    'svaneti',
     'berlin',
     'netherlands',
     'greece',
@@ -110,13 +112,15 @@ const removeNotCurrentFiles = async (bucket) => {
     for (let i = 0; i < DIRECTORIES.length; i++) {
         const directory = DIRECTORIES[i];
 
+        console.log(`Upload directory ${directory}...`);
+
         const localFilenames = fs.readdirSync(directory);
 
         const filesToUpload = localFilenames
             .map((file) => `${directory}/${file}`)
             .filter((file) => !exitingFilenames.includes(file));
 
-        if (filesToUpload.length === 0) return;
+        if (filesToUpload.length === 0) continue;
 
         await transferManager.uploadManyFiles(filesToUpload, {
             passthroughOptions: {
