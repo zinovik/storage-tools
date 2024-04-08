@@ -6,10 +6,14 @@ const { Storage, TransferManager } = require('@google-cloud/storage');
 
 const BUCKET_NAME = 'zinovik-gallery';
 const DIRECTORIES = [
+    'vietnam',
+    'hoverla',
+    'eurotrip',
     'zanzibar',
     'naliboki',
     'sakartvelo',
     'zalessie',
+    'wild-belarus',
     'sri-lanka',
     'uzbekistan',
     'svaneti',
@@ -29,10 +33,14 @@ const FILES_TO_SAVE = [
 ];
 const FOLDERS_TO_SAVE = [
     'photos',
+    'vietnam',
+    'hoverla',
+    'eurotrip',
     'zanzibar',
     'naliboki',
     'sakartvelo',
     'zalessie',
+    'wild-belarus',
     'sri-lanka',
     'uzbekistan',
     'svaneti',
