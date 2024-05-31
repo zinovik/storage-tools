@@ -1,5 +1,5 @@
-const { Storage } = require('@google-cloud/storage');
 const fs = require('fs');
+const { Storage } = require('@google-cloud/storage');
 
 const FILES = [
     'digital-board-games/digital-board-games.json',
@@ -9,10 +9,7 @@ const FILES = [
     'zinovik-gallery/sources-config.json',
 ];
 
-const PATHS_TO_SAVE = [
-    '/home/max/drive/json_backup/',
-    '/home/max/gdrive/json_backup/',
-];
+const PATH_TO_SAVE = '/home/max/drive/json_backup/';
 
 const storage = new Storage();
 
@@ -23,11 +20,9 @@ FILES.forEach(async (path) => {
     const bucket = storage.bucket(bucketName);
     const file = await bucket.file(fileName).download();
 
-    PATHS_TO_SAVE.forEach((pathToSave) =>
-        fs.writeFileSync(
-            `${pathToSave}${fileName}`,
-            JSON.stringify(JSON.parse(file.toString()), null, 4)
-        )
+    fs.writeFileSync(
+        `${PATH_TO_SAVE}${fileName}`,
+        JSON.stringify(JSON.parse(file.toString()), null, 4)
     );
 
     console.log(`${path} was saved`);
