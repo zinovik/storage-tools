@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node index.js",
+        "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node index.js",
         "copy": "node tools/find-and-copy-files",
         "upload": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node upload-files-to-bucket"
     },

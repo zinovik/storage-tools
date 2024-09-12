@@ -6,6 +6,7 @@ const { Storage, TransferManager } = require('@google-cloud/storage');
 
 const BUCKET_NAME = 'zinovik-gallery';
 const DIRECTORIES = [
+    '2024.07.04 - Mira Vychulki photo session (portraits_by_sh)',
     'vietnam',
     'hoverla',
     'eurotrip',
@@ -36,6 +37,7 @@ const FILES_TO_SAVE = [
 ];
 const FOLDERS_TO_SAVE = [
     'photos',
+    '2024.07.04 - Mira Vychulki photo session (portraits_by_sh)',
     'vietnam',
     'hoverla',
     'eurotrip',
@@ -138,7 +140,7 @@ const removeNotCurrentFiles = async (bucket) => {
 
         await transferManager.uploadManyFiles(filesToUpload, {
             passthroughOptions: {
-                public: true,
+                public: false,
                 metadata: {
                     cacheControl: 'public, max-age=31536000',
                 },
