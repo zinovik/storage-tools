@@ -7,6 +7,7 @@ const { Storage, TransferManager } = require('@google-cloud/storage');
 const BUCKET_NAME = 'zinovik-gallery';
 const DIRECTORIES = [
     '2024.07.04 - Mira Vychulki photo session (portraits_by_sh)',
+    '2024.08.10 - Cynic, The Omnific',
     'vietnam',
     'hoverla',
     'eurotrip',
@@ -38,6 +39,7 @@ const FILES_TO_SAVE = [
 const FOLDERS_TO_SAVE = [
     'photos',
     '2024.07.04 - Mira Vychulki photo session (portraits_by_sh)',
+    '2024.08.10 - Cynic, The Omnific',
     'vietnam',
     'hoverla',
     'eurotrip',
