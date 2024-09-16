@@ -7,6 +7,7 @@ const FILES = [
     'zinovik-gallery/albums.json',
     'zinovik-gallery/files.json',
     'zinovik-gallery/sources-config.json',
+    'zinovik-gallery/users.json',
 ];
 
 const PATH_TO_SAVE = '/home/max/drive/json_backup/';

@@ -35,6 +35,7 @@ const FILES_TO_SAVE = [
     'albums.json',
     'files.json',
     'sources-config.json',
+    'users.json',
 ];
 const FOLDERS_TO_SAVE = [
     'photos',
