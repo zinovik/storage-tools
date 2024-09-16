@@ -19,7 +19,7 @@ const ALBUMS = [
     'board-games',
 ];
 const SOURCE_PATH = '/home/max/photos';
-const DESTINATION_PATH = `/home/max/projects/private/backup-storage-files/tools`;
+const DESTINATION_PATH = `/home/max/projects/private/storage-tools/tools`;
 
 (async () => {
     const { stdout: treeOutput } = await promisify(exec)(

@@ -1,11 +1,11 @@
 {
-    "name": "backup-storage-files",
+    "name": "storage-tools",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node index.js",
+        "backup": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node backup.js",
         "copy": "node tools/find-and-copy-files",
         "upload": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node upload-files-to-bucket"
     },
