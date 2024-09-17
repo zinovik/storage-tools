@@ -1,10 +1,12 @@
 const { Storage } = require('@google-cloud/storage');
 
-const NEW_FILENAMES = [
-    //
+const NEW_FILES_GROUPS = [
+    {
+        filenames: [],
+        path: 'path/unsorted',
+        accesses: null,
+    },
 ];
-const NEW_FILES_PATH = 'test/unsorted';
-const NEW_FILES_ACCESSES = null;
 
 //
 
@@ -21,15 +23,26 @@ const getFile = async (bucket, filename) => {
 const getFiles = async (bucket) => getFile(bucket, FILES_FILE_NAME);
 const getAlbums = async (bucket) => getFile(bucket, ALBUMS_FILE_NAME);
 
-const addNewFiles = (files, filenames, path, accesses) => [
-    ...files,
-    ...filenames.map((filename) => ({
-        path,
-        filename,
-        description: '',
-        ...(accesses ? { accesses } : {}),
-    })),
-];
+const addNewFiles = (files, newFilesGroups) => {
+    const newFiles = [];
+
+    newFilesGroups.forEach((newFilesGroup) => {
+        newFilesGroup.filenames.forEach((filename) => {
+            if (files.find((file) => file.filename === filename)) return;
+
+            newFiles.push({
+                path: newFilesGroup.path,
+                filename,
+                description: '',
+                ...(newFilesGroup.accesses
+                    ? { accesses: newFilesGroup.accesses }
+                    : {}),
+            });
+        });
+    });
+
+    return [...files, ...newFiles];
+};
 
 const addNewAlbums = (albums, files) => [
     ...albums,
@@ -144,12 +157,7 @@ const saveAlbums = async (bucket, file) =>
     ]);
 
     console.log('update files...');
-    const updatedFiles = addNewFiles(
-        files,
-        NEW_FILENAMES,
-        NEW_FILES_PATH,
-        NEW_FILES_ACCESSES
-    );
+    const updatedFiles = addNewFiles(files, NEW_FILES_GROUPS);
     const updatedAlbums = addNewAlbums(albums, updatedFiles);
     const sortedAlbums = sortAlbums(updatedAlbums);
     const sortedFiles = sortFiles(updatedFiles, albums);
