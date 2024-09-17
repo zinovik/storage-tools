@@ -15,7 +15,6 @@ const PATH_TO_SAVE = '/home/max/drive/json_backup/';
 const storage = new Storage();
 
 FILES.forEach(async (path) => {
-    console.log(`Getting ${path}...`);
     const [bucketName, fileName] = path.split('/');
 
     const bucket = storage.bucket(bucketName);

@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const { promisify } = require('util');
 const fs = require('fs');
-const files = require('../../../../drive/json_backup/files.json');
+const files = require('../../../../../drive/json_backup/files.json');
 
 const ALBUMS = [
     'zanzibar',

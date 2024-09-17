@@ -5,14 +5,17 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "backup": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node backup.js",
-        "copy": "node tools/find-and-copy-files",
-        "upload": "cd tools && GOOGLE_APPLICATION_CREDENTIALS=../key-file.json node upload-files-to-bucket"
+        "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/backup-json-files-to-local",
+        "add": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/add-new-files-to-json.js",
+        "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/upload-photos-to-storage",
+        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-sources-config",
+        "start": "npm run backup && npm run add && npm run upload && npm run sources"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@google-cloud/storage": "7.7.0"
+        "@google-cloud/storage": "7.12.1",
+        "google-auth-library": "9.14.1"
     },
     "devDependencies": {
         "stream-shift": "1.0.3"
