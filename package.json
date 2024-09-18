@@ -8,8 +8,10 @@
         "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/backup-json-files-to-local",
         "add": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/add-new-files-to-json.js",
         "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/upload-photos-to-storage",
-        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-sources-config",
-        "start": "npm run backup && npm run add && npm run upload && npm run sources"
+        "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/clean-up-storage-files",
+        "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-storage-filenames",
+        "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-storage-file-accesses",
+        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-sources-config"
     },
     "author": "",
     "license": "ISC",
