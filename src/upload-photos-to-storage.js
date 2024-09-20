@@ -61,7 +61,7 @@ const getAllLocalFilePaths = async (filesPath) => {
         .map((filePath) => filePath.substring(filePath.indexOf(filesPath)));
 };
 
-const uploadFile = async (bucket, filePath, storageFolderName) => {
+const uploadFile = async (bucket, filePath, storageFolderName, isPublic) => {
     const [storageFolderNameFromPath, fileName] =
         getFolderNameAndFilename(filePath);
 
@@ -69,22 +69,23 @@ const uploadFile = async (bucket, filePath, storageFolderName) => {
         destination: `${
             storageFolderName || storageFolderNameFromPath
         }/${fileName}`,
-        public: false,
+        public: isPublic,
         metadata: {
             cacheControl: 'public, max-age=31536000',
         },
     });
 };
 
-const uploadFiles = async (bucket, filePaths, folder) => {
+const uploadFiles = async (bucket, filePaths, folder, isPublic) => {
     for (let i = 0; i < filePaths.length; i += UPLOAD_BATCH_SIZE) {
         console.log(`- upload batch starting from ${i}`);
         const promises = filePaths
             .slice(i, i + UPLOAD_BATCH_SIZE)
-            .map((filePath) => uploadFile(bucket, filePath, folder));
+            .map((filePath) => uploadFile(bucket, filePath, folder, isPublic));
 
         await Promise.all(promises);
     }
+    console.log('- upload batch done');
 };
 
 const filterFilenames = (filenames, exitingFilenames) =>
@@ -123,6 +124,7 @@ const mapFilenamesToLocalFilePaths = (filenames, localFilePaths) =>
     await uploadFiles(
         bucket,
         localFilePathsToUpload,
-        BUCKET_NAME === GALLERY_BUCKET_NAME ? null : HEDGEHOGS_BUCKET_FOLDER
+        BUCKET_NAME === GALLERY_BUCKET_NAME ? null : HEDGEHOGS_BUCKET_FOLDER,
+        BUCKET_NAME !== GALLERY_BUCKET_NAME
     );
 })();

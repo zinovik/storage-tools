@@ -28,6 +28,7 @@ const getStorageFilePathsIsPublic = async (bucket, storageFilePaths) => {
 
         results.push(...(await Promise.all(promises)));
     }
+    console.log('- get file access batch done');
 
     return results;
 };
@@ -128,6 +129,9 @@ const updateStorageFileAccesses = async (
 
         await Promise.all(promises);
     }
+    console.log(
+        `- update ${isPublic ? 'public' : 'private'} file access batch done`
+    );
 };
 
 (async () => {

@@ -76,6 +76,7 @@ const renameFiles = async (bucket, renameFilenamesPairs) => {
 
         await Promise.all(promises);
     }
+    console.log('- rename batch done');
 };
 
 (async () => {
