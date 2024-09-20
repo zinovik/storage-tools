@@ -5,13 +5,13 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/backup-json-files-to-local",
-        "add": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/add-new-files-to-json.js",
-        "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/upload-photos-to-storage",
-        "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/clean-up-storage-files",
-        "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-storage-filenames",
-        "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-storage-file-accesses",
-        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/update-sources-config"
+        "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/1-backup-json-files-to-local",
+        "add": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/2-add-new-files-to-json.js",
+        "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-upload-photos-to-storage",
+        "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-update-storage-filenames",
+        "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-storage-files",
+        "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/6-update-file-accesses",
+        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/7-update-sources-config"
     },
     "author": "",
     "license": "ISC",

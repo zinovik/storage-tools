@@ -116,6 +116,7 @@ const mapFilenamesToLocalFilePaths = (filenames, localFilePaths) =>
     console.log('Get all local file paths...');
     const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);
 
+    // TODO: Upload all local files?
     const localFilePathsToUpload = mapFilenamesToLocalFilePaths(
         filterFilenames(filenamesFromJson, exitingStorageFilenames),
         allLocalFilePaths

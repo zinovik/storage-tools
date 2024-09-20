@@ -37,6 +37,7 @@ const getFilenamesFromHedgehogs = async (bucket) => {
     );
 };
 
+// remove files that are not in files.json or not presented locally?
 const removeUnrelatedFiles = async (bucket, filesToSave) => {
     const [exitingFiles] = await bucket.getFiles({ versions: true });
 
