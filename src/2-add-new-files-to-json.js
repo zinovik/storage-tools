@@ -19,7 +19,6 @@ const UPDATE_SORT_ALBUM_FILES =
 
 const BUCKET_NAME = 'zinovik-gallery';
 const FILES_FILE_NAME = 'files.json';
-const ALBUMS_FILE_NAME = 'albums.json';
 
 const getFile = async (bucket, filename) => {
     const file = await bucket.file(filename).download();
@@ -28,7 +27,6 @@ const getFile = async (bucket, filename) => {
 };
 
 const getFiles = async (bucket) => getFile(bucket, FILES_FILE_NAME);
-const getAlbums = async (bucket) => getFile(bucket, ALBUMS_FILE_NAME);
 
 const addNewFiles = (files, newFilesGroups) => {
     const newFiles = [];
@@ -68,7 +66,8 @@ const addNewFiles = (files, newFilesGroups) => {
     const { data } = await client.request({
         url: UPDATE_SORT_ALBUM_FILES,
         method: 'POST',
-        bodY: JSON.stringify({ files: updatedFiles }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ files: updatedFiles }),
     });
 
     console.log(data);

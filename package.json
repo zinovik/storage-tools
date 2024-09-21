@@ -11,7 +11,8 @@
         "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-update-storage-filenames",
         "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-storage-files",
         "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/6-update-file-accesses",
-        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/7-update-sources-config"
+        "sources": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/7-update-sources-config",
+        "start": "npm run backup && npm run add && npm run upload && npm run rename && npm run clean && npm run access && npm run sources"
     },
     "author": "",
     "license": "ISC",

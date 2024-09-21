@@ -26,7 +26,7 @@ const getFolderNameAndFilename = (filePath) => {
     return [folderName, getFilename(filePath)];
 };
 
-const getFilenamesAndAccessesFromFile = async (bucket) => {
+const getFilenamesFromFile = async (bucket) => {
     const file = await bucket.file(FILES_FILE_NAME).download();
 
     return JSON.parse(file.toString()).map((file) => file.filename);
@@ -104,7 +104,7 @@ const mapFilenamesToLocalFilePaths = (filenames, localFilePaths) =>
 
     console.log('Get filenames from file...');
     const filenamesFromJson = await (BUCKET_NAME === GALLERY_BUCKET_NAME
-        ? getFilenamesAndAccessesFromFile(bucket)
+        ? getFilenamesFromFile(bucket)
         : getFilenamesFromHedgehogs(bucket));
 
     console.log('Get exiting filenames...');
