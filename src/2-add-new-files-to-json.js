@@ -1,13 +1,23 @@
+const { exec } = require('child_process');
+const { promisify } = require('util');
 const { GoogleAuth } = require('google-auth-library');
 const { Storage } = require('@google-cloud/storage');
 
-const NEW_FILES_GROUPS = [
+const NEW_FILES_GROUPS_MANUAL = [
     {
         filenames: [],
         path: 'path/unsorted',
         accesses: null,
     },
 ];
+
+const LOCAL_PATH_PART_TO_PATH_MAP = {
+    'Board games (pure games)': 'board-games/unsorted',
+    // 'Football in Poland': 'football/unsorted',
+    Mira: 'mira/unsorted',
+    Warsaw: 'warszawa/unsorted',
+    'Warsaw (we)': 'warszawa-we/unsorted',
+};
 
 //
 
@@ -19,14 +29,35 @@ const UPDATE_SORT_ALBUM_FILES =
 
 const BUCKET_NAME = 'zinovik-gallery';
 const FILES_FILE_NAME = 'files.json';
+const PHOTOS_PATH = '/home/max/photos';
 
-const getFile = async (bucket, filename) => {
-    const file = await bucket.file(filename).download();
+const getFilename = (filePath) => filePath.split('/').pop();
+
+const getAllLocalFilePaths = async (filesPath) => {
+    const { stdout: treeOutput } = await promisify(exec)(
+        `find  ${filesPath} -type f`,
+        { maxBuffer: 1024 * 1024 * 4 }
+    );
+
+    return treeOutput.split('\n');
+};
+
+const getFiles = async (bucket) => {
+    const file = await bucket.file(FILES_FILE_NAME).download();
 
     return JSON.parse(file.toString());
 };
 
-const getFiles = async (bucket) => getFile(bucket, FILES_FILE_NAME);
+const getNewFilesGroupsAuto = (allLocalFilePaths, localPathPartToPathMap) =>
+    Object.keys(localPathPartToPathMap).map((localPathPart) => ({
+        filenames: allLocalFilePaths
+            .filter((localFilePath) =>
+                localFilePath.includes(` - ${localPathPart}/`)
+            )
+            .map(getFilename),
+        path: localPathPartToPathMap[localPathPart],
+        accesses: null,
+    }));
 
 const addNewFiles = (files, newFilesGroups) => {
     const newFiles = [];
@@ -34,6 +65,8 @@ const addNewFiles = (files, newFilesGroups) => {
     newFilesGroups.forEach((newFilesGroup) => {
         newFilesGroup.filenames.forEach((filename) => {
             if (files.find((file) => file.filename === filename)) return;
+
+            console.log(`NEW FILE: ${newFilesGroup.path}/${filename}`);
 
             newFiles.push({
                 path: newFilesGroup.path,
@@ -56,8 +89,18 @@ const addNewFiles = (files, newFilesGroups) => {
     console.log('get files...');
     const files = await getFiles(bucket);
 
+    console.log('get new local files to add...');
+    const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);
+    const newFilesGroupsAuto = getNewFilesGroupsAuto(
+        allLocalFilePaths,
+        LOCAL_PATH_PART_TO_PATH_MAP
+    );
+
     console.log('update files...');
-    const updatedFiles = addNewFiles(files, NEW_FILES_GROUPS);
+    const updatedFiles = addNewFiles(files, [
+        ...NEW_FILES_GROUPS_MANUAL,
+        ...newFilesGroupsAuto,
+    ]);
 
     console.log('save files...');
     const auth = new GoogleAuth();

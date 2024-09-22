@@ -52,13 +52,11 @@ const getExitingStorageFilePaths = async (bucket) => {
 
 const getAllLocalFilePaths = async (filesPath) => {
     const { stdout: treeOutput } = await promisify(exec)(
-        `tree ${filesPath} -f`,
+        `find  ${filesPath} -type f`,
         { maxBuffer: 1024 * 1024 * 4 }
     );
 
-    return treeOutput
-        .split('\n')
-        .map((filePath) => filePath.substring(filePath.indexOf(filesPath)));
+    return treeOutput.split('\n');
 };
 
 const uploadFile = async (bucket, filePath, storageFolderName, isPublic) => {
