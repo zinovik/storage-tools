@@ -59,12 +59,28 @@ const getNewFilesGroupsAuto = (allLocalFilePaths, localPathPartToPathMap) =>
         accesses: null,
     }));
 
-const addNewFiles = (files, newFilesGroups) => {
+const updateFiles = (files, newFilesGroups) => {
     const newFiles = [];
+
+    const filesAfterRemoving = files.filter((file) => {
+        const newFilesGroup = newFilesGroups.find((newFilesGroup) =>
+            newFilesGroup.filenames.some(
+                (filename) => filename === file.filename
+            )
+        );
+
+        const newPath = newFilesGroup?.path;
+        if (!newPath || newPath.split('/')[0] === file.path.split('/')[0])
+            return true;
+
+        console.log(`MOVED FILE: ${JSON.stringify(file)}`);
+        return false;
+    });
 
     newFilesGroups.forEach((newFilesGroup) => {
         newFilesGroup.filenames.forEach((filename) => {
-            if (files.find((file) => file.filename === filename)) return;
+            if (filesAfterRemoving.find((file) => file.filename === filename))
+                return;
 
             console.log(`NEW FILE: ${newFilesGroup.path}/${filename}`);
 
@@ -79,7 +95,18 @@ const addNewFiles = (files, newFilesGroups) => {
         });
     });
 
-    return [...files, ...newFiles];
+    return [...filesAfterRemoving, ...newFiles];
+};
+
+const removeFiles = (updatedFiles, allLocalFilePaths) => {
+    const allLocalFilenames = allLocalFilePaths.map(getFilename);
+
+    return updatedFiles.filter((file) => {
+        if (allLocalFilenames.includes(file.filename)) return true;
+
+        console.log(`REMOVED FILE: ${JSON.stringify(file)}`);
+        return false;
+    });
 };
 
 (async () => {
@@ -97,10 +124,14 @@ const addNewFiles = (files, newFilesGroups) => {
     );
 
     console.log('update files...');
-    const updatedFiles = addNewFiles(files, [
+    const updatedFiles = updateFiles(files, [
         ...NEW_FILES_GROUPS_MANUAL,
         ...newFilesGroupsAuto,
     ]);
+    const updatedFilesAfterRemoving = removeFiles(
+        updatedFiles,
+        allLocalFilePaths
+    );
 
     console.log('save files...');
     const auth = new GoogleAuth();
@@ -110,7 +141,7 @@ const addNewFiles = (files, newFilesGroups) => {
         url: UPDATE_SORT_ALBUM_FILES,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ files: updatedFiles }),
+        body: JSON.stringify({ files: updatedFilesAfterRemoving }),
     });
 
     console.log(data);
