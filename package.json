@@ -6,13 +6,13 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/1-backup-json-files-to-local",
-        "files-json": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/2-update-files-json.js",
+        "add": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/2-update-files-json.js",
         "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-upload-files-to-storage",
-        "filenames": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-sync-storage-filenames",
-        "clean-up": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-storage-files",
-        "accesses": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/6-update-file-accesses",
+        "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-sync-storage-filenames",
+        "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-storage-files",
+        "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/6-update-file-accesses",
         "urls": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/7-update-sources-config",
-        "start": "npm run backup && npm run files-json && npm run upload && npm run filenames && npm run clean-up && npm run accesses && npm run urls"
+        "start": "npm run add && npm run files-json && npm run upload && npm run rename && npm run clean && npm run access && npm run urls"
     },
     "author": "",
     "license": "ISC",

@@ -12,11 +12,14 @@ const NEW_FILES_GROUPS_MANUAL = [
 ];
 
 const LOCAL_PATH_PART_TO_PATH_MAP = {
-    'Board games (pure games)': 'board-games/unsorted',
-    // 'Football in Poland': 'football/unsorted',
-    Mira: 'mira/unsorted',
+    'Mira in maternity hospital': 'mira-maternity-hospital/unsorted',
+    'Vacation in Belarus': 'vacation-in-belarus/unsorted',
+    'Mira documents': 'mira-documents/unsorted',
     Warsaw: 'warszawa/unsorted',
     'Warsaw (we)': 'warszawa-we/unsorted',
+    'Football in Poland': 'football/unsorted',
+    'Board games (pure games)': 'board-games/unsorted',
+    'Mira at home': 'mira-at-home/unsorted',
 };
 
 //
