@@ -12,7 +12,7 @@
         "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-storage-files",
         "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/6-update-file-accesses",
         "urls": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/7-update-sources-config",
-        "start": "npm run add && npm run files-json && npm run upload && npm run rename && npm run clean && npm run access && npm run urls"
+        "start": "npm run backup && npm run add && npm run upload && npm run rename && npm run clean && npm run access && npm run urls"
     },
     "author": "",
     "license": "ISC",
