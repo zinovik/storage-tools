@@ -19,6 +19,7 @@ const LOCAL_PATH_PART_TO_PATH_MAP = {
     'Warsaw (we)': 'warszawa-we/unsorted',
     'Football in Poland': 'football/unsorted',
     'Rotting Christ, Borknagar, Seth': 'gigs/unsorted',
+    'Ulcerate, Selbst': 'gigs/unsorted',
     'Board games (pure games)': 'board-games/unsorted',
     'Board games (people and general)': 'board-games-people-general/unsorted',
     'Mira at home': 'mira-at-home/unsorted',
