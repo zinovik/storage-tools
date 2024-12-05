@@ -17,6 +17,7 @@ const LOCAL_PATH_PART_TO_PATH_MAP = {
     'Mira documents': 'mira-documents/unsorted',
 
     'Belarus, November 2024': 'belarus-november-2024/unsorted',
+    'Mira birthdays pizza': 'mira-birthdays-pizza/unsorted',
 
     Warsaw: 'warszawa/unsorted',
     'Warsaw (we)': 'warszawa-we/unsorted',
