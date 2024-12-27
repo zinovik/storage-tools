@@ -28,6 +28,7 @@ const LOCAL_PATH_PART_TO_PATH_MAP = {
     'Ulcerate, Selbst': 'gigs/unsorted',
 
     'Board games (pure games)': 'board-games/unsorted',
+    'Board games (from web)': 'board-games-from-web/unsorted',
     'Board games (people and general)': 'board-games-people-general/unsorted',
     'Mira at home': 'mira-at-home/unsorted',
 };
