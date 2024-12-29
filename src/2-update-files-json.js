@@ -19,6 +19,7 @@ const LOCAL_PATH_PART_TO_PATH_MAP = {
     'Belarus, November 2024': 'belarus-november-2024/unsorted',
     'Mira birthdays pizza': 'mira-birthdays-pizza/unsorted',
 
+    'Vova and Natasha in Warsaw': 'vova-and-natasha-in-warsaw/unsorted',
     Warsaw: 'warszawa/unsorted',
     'Warsaw (we)': 'warszawa-we/unsorted',
 
