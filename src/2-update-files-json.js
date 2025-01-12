@@ -102,7 +102,6 @@ const updateFiles = (files, newFilesGroups) => {
             newFiles.push({
                 path: newFilesGroup.path,
                 filename,
-                description: '',
                 ...(newFilesGroup.accesses
                     ? { accesses: newFilesGroup.accesses }
                     : {}),
