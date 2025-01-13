@@ -7,7 +7,7 @@ const NEW_FILES_GROUPS_MANUAL = [
     {
         filenames: [],
         path: 'path/unsorted',
-        accesses: null,
+        accesses: [],
     },
 ];
 
@@ -71,7 +71,7 @@ const getNewFilesGroupsAuto = (allLocalFilePaths, localPathPartToPathMap) =>
             )
             .map(getFilename),
         path: localPathPartToPathMap[localPathPart],
-        accesses: null,
+        accesses: [],
     }));
 
 const updateFiles = (files, newFilesGroups) => {
@@ -102,9 +102,7 @@ const updateFiles = (files, newFilesGroups) => {
             newFiles.push({
                 path: newFilesGroup.path,
                 filename,
-                ...(newFilesGroup.accesses
-                    ? { accesses: newFilesGroup.accesses }
-                    : {}),
+                accesses: newFilesGroup.accesses || [],
             });
         });
     });
