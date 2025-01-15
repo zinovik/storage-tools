@@ -1,6 +1,7 @@
 [
     { "localPathPart": "Belarus, July 2024", "accesses": ["family"] },
     { "localPathPart": "Belarus, November 2024", "accesses": ["family"] },
+    { "localPathPart": "Berlin", "accesses": ["family"] },
     {
         "localPathPart": "Board games (pure games)",
         "accesses": ["public"],
@@ -18,6 +19,10 @@
         "localPathPart": "Football in Poland",
         "accesses": ["public"],
         "path": "football"
+    },
+    {
+        "localPathPart": "Kotelnica Bialczanska in Bialka Tatrzanska",
+        "accesses": ["family"]
     },
     { "localPathPart": "Mira at home", "accesses": ["family"] },
     { "localPathPart": "Mira birthdays pizza", "accesses": ["family"] },
