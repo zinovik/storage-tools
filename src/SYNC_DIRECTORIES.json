@@ -24,6 +24,8 @@
         "localPathPart": "Kotelnica Bialczanska in Bialka Tatrzanska",
         "accesses": ["family"]
     },
+    { "localPathPart": "Mira's first haircut", "accesses": ["family"] },
+    { "localPathPart": "Mira and Kseniya's Christmas tree", "accesses": ["family"] },
     { "localPathPart": "Mira at home", "accesses": ["family"] },
     { "localPathPart": "Mira birthdays pizza", "accesses": ["family"] },
     { "localPathPart": "Mira documents", "accesses": ["family"] },

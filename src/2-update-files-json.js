@@ -46,6 +46,7 @@ const getNewFilesGroups = (allLocalFilePaths, syncDirectories) =>
             syncDirectory.path ||
             syncDirectory.localPathPart
                 .replaceAll(' ', '-')
+                .replaceAll("'", '-')
                 .replaceAll(',', '')
                 .replaceAll('(', '')
                 .replaceAll(')', '')
