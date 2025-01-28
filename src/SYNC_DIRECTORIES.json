@@ -19,6 +19,7 @@
     { "localPathPart": "Mira birthdays pizza", "accesses": ["family"] },
     { "localPathPart": "Mira documents", "accesses": ["family"] },
     { "localPathPart": "Mira in maternity hospital", "accesses": ["family"] },
+    { "localPathPart": "Mira with board game boxes", "accesses": ["family"] },
     { "localPathPart": "Mira Vychulki photo session (portraits_by_sh)", "accesses": ["family"] },
     { "localPathPart": "Munich", "accesses": ["family"] },
     { "localPathPart": "Netherlands", "accesses": ["family"] },

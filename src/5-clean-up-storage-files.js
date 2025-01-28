@@ -17,12 +17,21 @@ const FILES_TO_SAVE = [
     ...(BUCKET_NAME === HEDGEHOGS_BUCKET_NAME ? [HEDGEHOGS_FILE_NAME] : []),
 ];
 
+const SKIP_UPLOAD_PATHS = ['vietnam', 'hoverla', 'eurotrip'];
+
 const getFilename = (filePath) => filePath.split('/').pop();
 
 const getFilenamesFromFile = async (bucket) => {
     const file = await bucket.file(FILES_FILE_NAME).download();
 
-    return JSON.parse(file.toString()).map((file) => file.filename);
+    return JSON.parse(file.toString())
+        .filter((file) =>
+            SKIP_UPLOAD_PATHS.every(
+                (path) =>
+                    file.path !== path && !file.path.startsWith(`${path}/`)
+            )
+        )
+        .map((file) => file.filename);
 };
 
 const getFilenamesFromHedgehogs = async (bucket) => {

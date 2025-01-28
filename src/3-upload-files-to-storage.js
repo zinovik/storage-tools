@@ -17,6 +17,8 @@ const HEDGEHOGS_FILE_NAME = 'hedgehogs.json';
 const PHOTOS_PATH = '/home/max/photos';
 const HEDGEHOGS_BUCKET_FOLDER = 'photos';
 
+const SKIP_UPLOAD_PATHS = ['vietnam', 'hoverla', 'eurotrip'];
+
 const getFilename = (filePath) => filePath.split('/').pop();
 
 const getFolderNameAndFilename = (filePath) => {
@@ -29,7 +31,14 @@ const getFolderNameAndFilename = (filePath) => {
 const getFilenamesFromFile = async (bucket) => {
     const file = await bucket.file(FILES_FILE_NAME).download();
 
-    return JSON.parse(file.toString()).map((file) => file.filename);
+    return JSON.parse(file.toString())
+        .filter((file) =>
+            SKIP_UPLOAD_PATHS.every(
+                (path) =>
+                    file.path !== path && !file.path.startsWith(`${path}/`)
+            )
+        )
+        .map((file) => file.filename);
 };
 
 const getFilenamesFromHedgehogs = async (bucket) => {
