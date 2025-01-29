@@ -1,6 +1,7 @@
 const { exec } = require('child_process');
 const { promisify } = require('util');
 const { Storage } = require('@google-cloud/storage');
+const { performBatch } = require('./perform-batch');
 
 const BUCKET_NAME = 'zinovik-gallery';
 
@@ -66,17 +67,13 @@ const renameFile = async (bucket, oldFilePath, newFilePath) => {
 };
 
 const renameFiles = async (bucket, renameFilenamesPairs) => {
-    for (let i = 0; i < renameFilenamesPairs.length; i += RENAME_BATCH_SIZE) {
-        console.log(`- rename batch starting from ${i}`);
-        const promises = renameFilenamesPairs
-            .slice(i, i + RENAME_BATCH_SIZE)
-            .map(([oldFilename, newFilename]) =>
-                renameFile(bucket, oldFilename, newFilename)
-            );
-
-        await Promise.all(promises);
-    }
-    console.log('- rename batch done');
+    await performBatch(
+        renameFilenamesPairs,
+        async ([oldFilename, newFilename]) =>
+            await renameFile(bucket, oldFilename, newFilename),
+        RENAME_BATCH_SIZE,
+        'rename files'
+    );
 };
 
 (async () => {

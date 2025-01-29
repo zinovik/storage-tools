@@ -1,6 +1,7 @@
 const { exec } = require('child_process');
 const { promisify } = require('util');
 const { Storage } = require('@google-cloud/storage');
+const { performBatch } = require('./perform-batch');
 
 const GALLERY_BUCKET_NAME = 'zinovik-gallery';
 const HEDGEHOGS_BUCKET_NAME = 'hedgehogs';
@@ -17,7 +18,7 @@ const HEDGEHOGS_FILE_NAME = 'hedgehogs.json';
 const PHOTOS_PATH = '/home/max/photos';
 const HEDGEHOGS_BUCKET_FOLDER = 'photos';
 
-const SKIP_UPLOAD_PATHS = ['vietnam', 'hoverla', 'eurotrip'];
+const SKIP_UPLOAD_PATHS = [];
 
 const getFilename = (filePath) => filePath.split('/').pop();
 
@@ -84,15 +85,13 @@ const uploadFile = async (bucket, filePath, storageFolderName, isPublic) => {
 };
 
 const uploadFiles = async (bucket, filePaths, folder, isPublic) => {
-    for (let i = 0; i < filePaths.length; i += UPLOAD_BATCH_SIZE) {
-        console.log(`- upload batch starting from ${i}`);
-        const promises = filePaths
-            .slice(i, i + UPLOAD_BATCH_SIZE)
-            .map((filePath) => uploadFile(bucket, filePath, folder, isPublic));
-
-        await Promise.all(promises);
-    }
-    console.log('- upload batch done');
+    await performBatch(
+        filePaths,
+        async (filePath) =>
+            await uploadFile(bucket, filePath, folder, isPublic),
+        UPLOAD_BATCH_SIZE,
+        'upload files'
+    );
 };
 
 const filterFilenames = (filenames, exitingFilenames) =>
