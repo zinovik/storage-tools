@@ -18,6 +18,7 @@
     { "localPathPart": "Mira at home", "accesses": ["family"] },
     { "localPathPart": "Mira birthdays pizza", "accesses": ["family"] },
     { "localPathPart": "Mira documents", "accesses": ["family"] },
+    { "localPathPart": "Mira in hospital", "accesses": ["family"] },
     { "localPathPart": "Mira in maternity hospital", "accesses": ["family"] },
     { "localPathPart": "Mira with board game boxes", "accesses": ["family"] },
     { "localPathPart": "Mira Vychulki photo session (portraits_by_sh)", "accesses": ["family"] },
