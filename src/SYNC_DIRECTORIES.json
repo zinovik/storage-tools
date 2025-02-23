@@ -26,6 +26,7 @@
     { "localPathPart": "Netherlands", "accesses": ["family"] },
     { "localPathPart": "New Year 2023", "accesses": ["family"] },
     { "localPathPart": "Odense, Copenhagen", "accesses": ["family"] },
+    { "localPathPart": "Papugarnia Carmen", "accesses": ["family"] },
     { "localPathPart": "Samarkand", "accesses": ["family"] },
     { "localPathPart": "Svaneti", "accesses": ["family"] },
     { "localPathPart": "The Warsaw Uprising run", "accesses": ["family"] },
@@ -51,5 +52,6 @@
     { "localPathPart": "Harakiri for the Sky, Celeste, Sunken", "path": "gigs/unsorted", "accesses": ["public"] },
     { "localPathPart": "Cynic, The Omnific", "path": "gigs/unsorted", "accesses": ["public"] },
     { "localPathPart": "Rotting Christ, Borknagar, Seth", "path": "gigs/unsorted", "accesses": ["public"] },
-    { "localPathPart": "Ulcerate, Selbst", "accesses": ["public"], "path": "gigs/unsorted" }
+    { "localPathPart": "Ulcerate, Selbst", "accesses": ["public"], "path": "gigs/unsorted" },
+    { "localPathPart": "Napalm Death, Crowbar, Full of Hell, Brat", "accesses": ["public"], "path": "gigs/unsorted" }
 ]
