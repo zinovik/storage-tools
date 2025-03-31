@@ -1,4 +1,5 @@
 const { Storage } = require('@google-cloud/storage');
+const { performBatch } = require('./perform-batch');
 
 const GALLERY_BUCKET_NAME = 'zinovik-gallery';
 const HEDGEHOGS_BUCKET_NAME = 'hedgehogs';
@@ -7,22 +8,38 @@ const HEDGEHOGS_BUCKET_NAME = 'hedgehogs';
 const BUCKET_NAME = GALLERY_BUCKET_NAME;
 // const BUCKET_NAME = HEDGEHOGS_BUCKET_NAME;
 
+const CLEAN_UP_BATCH_SIZE = 100;
 const FILES_FILE_NAME = 'files.json';
 const HEDGEHOGS_FILE_NAME = 'hedgehogs.json';
 
 const FILES_TO_SAVE = [
     ...(BUCKET_NAME === GALLERY_BUCKET_NAME
-        ? ['albums.json', FILES_FILE_NAME, 'sources-config.json', 'users.json']
+        ? [
+              'albums.json',
+              FILES_FILE_NAME,
+              'sources-config.json',
+              'users.json',
+              'board-gigs',
+          ]
         : []),
     ...(BUCKET_NAME === HEDGEHOGS_BUCKET_NAME ? [HEDGEHOGS_FILE_NAME] : []),
 ];
+
+const FORCE_REMOVE_PATHS = [];
 
 const getFilename = (filePath) => filePath.split('/').pop();
 
 const getFilenamesFromFile = async (bucket) => {
     const file = await bucket.file(FILES_FILE_NAME).download();
 
-    return JSON.parse(file.toString()).map((file) => file.filename);
+    return JSON.parse(file.toString())
+        .filter((file) =>
+            FORCE_REMOVE_PATHS.every(
+                (path) =>
+                    file.path !== path && !file.path.startsWith(`${path}/`)
+            )
+        )
+        .map((file) => file.filename);
 };
 
 const getFilenamesFromHedgehogs = async (bucket) => {
@@ -49,9 +66,15 @@ const removeUnrelatedFiles = async (bucket, filesToSave) => {
             })
         );
 
+    console.log(filesToRemove.map((f) => f.id));
     console.log(`Unrelated files to remove: ${filesToRemove.length}`);
 
-    await Promise.all(filesToRemove.map((file) => file.delete()));
+    await performBatch(
+        filesToRemove,
+        async (file) => await file.delete(),
+        CLEAN_UP_BATCH_SIZE,
+        'delete files'
+    );
 };
 
 const filterOldVersions = (files) => {
@@ -79,9 +102,32 @@ const removeOldFileVersions = async (bucket) => {
         })
     );
 
+    console.log(filesToRemove.map((f) => f.id));
     console.log(`Old file versions to remove: ${filesToRemove.length}`);
 
     await Promise.all(filesToRemove.map((file) => file.delete()));
+};
+
+const removeSoftDeletedFiles = async (bucket) => {
+    const [exitingFiles] = await bucket.getFiles({ versions: true });
+
+    const filesToRemove = exitingFiles
+        .filter((file) => file.metadata.timeDeleted)
+        .map((file) =>
+            bucket.file(file.name, {
+                generation: file.generation,
+            })
+        );
+
+    console.log(filesToRemove.map((f) => f.id));
+    console.log(`Soft deleted files to remove: ${filesToRemove.length}`);
+
+    await performBatch(
+        filesToRemove,
+        async (file) => await file.delete(),
+        CLEAN_UP_BATCH_SIZE,
+        'delete files'
+    );
 };
 
 (async () => {
@@ -101,4 +147,7 @@ const removeOldFileVersions = async (bucket) => {
 
     console.log('Remove old file versions...');
     await removeOldFileVersions(bucket);
+
+    console.log('Remove soft deleted files...');
+    await removeSoftDeletedFiles(bucket);
 })();

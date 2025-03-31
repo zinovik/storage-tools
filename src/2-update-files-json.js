@@ -1,40 +1,12 @@
 const { exec } = require('child_process');
 const { promisify } = require('util');
+const fs = require('fs');
 const { GoogleAuth } = require('google-auth-library');
 const { Storage } = require('@google-cloud/storage');
 
-const NEW_FILES_GROUPS_MANUAL = [
-    {
-        filenames: [],
-        path: 'path/unsorted',
-        accesses: [],
-    },
-];
-
-const LOCAL_PATH_PART_TO_PATH_MAP = {
-    'Mira in maternity hospital': 'mira-maternity-hospital/unsorted',
-    'Vacation in Belarus': 'vacation-in-belarus/unsorted',
-    'Mira documents': 'mira-documents/unsorted',
-
-    'Belarus, November 2024': 'belarus-november-2024/unsorted',
-    'Mira birthdays pizza': 'mira-birthdays-pizza/unsorted',
-
-    'Vova and Natasha in Warsaw': 'vova-and-natasha-in-warsaw/unsorted',
-    Warsaw: 'warszawa/unsorted',
-    'Warsaw (we)': 'warszawa-we/unsorted',
-
-    'Football in Poland': 'football/unsorted',
-
-    'Rotting Christ, Borknagar, Seth': 'gigs/unsorted',
-    'Ulcerate, Selbst': 'gigs/unsorted',
-
-    'Board games (pure games)': 'board-games/unsorted',
-    'Board games (from web)': 'board-games-from-web/unsorted',
-    'Board games (people and general)': 'board-games-people-general/unsorted',
-    'Mira at home': 'mira-at-home/unsorted',
-};
-
-//
+const SYNC_DIRECTORIES = JSON.parse(
+    fs.readFileSync('./src/SYNC_DIRECTORIES.json').toString()
+);
 
 const UPDATE_SORT_ALBUM_FILES =
     'https://gallery-api-306312319198.europe-central2.run.app/edit/update-sort-albums-files';
@@ -63,15 +35,23 @@ const getFiles = async (bucket) => {
     return JSON.parse(file.toString());
 };
 
-const getNewFilesGroupsAuto = (allLocalFilePaths, localPathPartToPathMap) =>
-    Object.keys(localPathPartToPathMap).map((localPathPart) => ({
+const getNewFilesGroups = (allLocalFilePaths, syncDirectories) =>
+    syncDirectories.map((syncDirectory) => ({
         filenames: allLocalFilePaths
             .filter((localFilePath) =>
-                localFilePath.includes(` - ${localPathPart}/`)
+                localFilePath.includes(` - ${syncDirectory.localPathPart}/`)
             )
             .map(getFilename),
-        path: localPathPartToPathMap[localPathPart],
-        accesses: [],
+        path:
+            syncDirectory.path ||
+            syncDirectory.localPathPart
+                .replaceAll(' ', '-')
+                .replaceAll("'", '-')
+                .replaceAll(',', '')
+                .replaceAll('(', '')
+                .replaceAll(')', '')
+                .toLowerCase() + '/unsorted',
+        accesses: syncDirectory.accesses || [],
     }));
 
 const updateFiles = (files, newFilesGroups) => {
@@ -117,6 +97,7 @@ const removeFiles = (updatedFiles, allLocalFilePaths) => {
         if (allLocalFilenames.includes(file.filename)) return true;
 
         console.log(`REMOVED FILE: ${JSON.stringify(file)}`);
+
         return false;
     });
 };
@@ -130,16 +111,18 @@ const removeFiles = (updatedFiles, allLocalFilePaths) => {
 
     console.log('get new local files to add...');
     const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);
-    const newFilesGroupsAuto = getNewFilesGroupsAuto(
+    const newFilesGroups = getNewFilesGroups(
         allLocalFilePaths,
-        LOCAL_PATH_PART_TO_PATH_MAP
+        SYNC_DIRECTORIES
     );
 
+    newFilesGroups.forEach((newFilesGroup) => {
+        if (newFilesGroup.filenames.length === 0)
+            console.warn(`WARNING! Empty group '${newFilesGroup.path}'!`);
+    });
+
     console.log('update files...');
-    const updatedFiles = updateFiles(files, [
-        ...NEW_FILES_GROUPS_MANUAL,
-        ...newFilesGroupsAuto,
-    ]);
+    const updatedFiles = updateFiles(files, newFilesGroups);
     const updatedFilesAfterRemoving = removeFiles(
         updatedFiles,
         allLocalFilePaths

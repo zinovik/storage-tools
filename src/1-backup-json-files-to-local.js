@@ -12,6 +12,8 @@ const FILES = [
 
 const PATH_TO_SAVE = '/home/max/drive/json_backup/';
 
+const SYNC_DIRECTORIES_FILE = 'SYNC_DIRECTORIES.json';
+
 const storage = new Storage();
 
 FILES.forEach(async (path) => {
@@ -27,3 +29,8 @@ FILES.forEach(async (path) => {
 
     console.log(`${path} was saved`);
 });
+
+fs.copyFileSync(
+    `./src/${SYNC_DIRECTORIES_FILE}`,
+    `${PATH_TO_SAVE}${SYNC_DIRECTORIES_FILE}`
+);
