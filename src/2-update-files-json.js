@@ -50,7 +50,7 @@ const getNewFilesGroups = (allLocalFilePaths, syncDirectories) =>
                 .replaceAll(',', '')
                 .replaceAll('(', '')
                 .replaceAll(')', '')
-                .toLowerCase() + '/unsorted',
+                .toLowerCase(),
         accesses: syncDirectory.accesses || [],
     }));
 
