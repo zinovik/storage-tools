@@ -38,8 +38,12 @@ const getFiles = async (bucket) => {
 const getNewFilesGroups = (allLocalFilePaths, syncDirectories) =>
     syncDirectories.map((syncDirectory) => ({
         filenames: allLocalFilePaths
-            .filter((localFilePath) =>
-                localFilePath.includes(` - ${syncDirectory.localPathPart}/`)
+            .filter(
+                (localFilePath) =>
+                    localFilePath.includes(
+                        ` - ${syncDirectory.localPathPart}/`
+                    ) ||
+                    localFilePath.includes(`/${syncDirectory.localPathPart}/`)
             )
             .map(getFilename),
         path:
