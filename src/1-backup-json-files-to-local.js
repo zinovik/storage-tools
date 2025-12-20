@@ -6,7 +6,6 @@ const FILES = [
     'hedgehogs/hedgehogs.json',
     'zinovik-gallery/albums.json',
     'zinovik-gallery/files.json',
-    'zinovik-gallery/sources-config.json',
     'zinovik-gallery/users.json',
 ];
 
