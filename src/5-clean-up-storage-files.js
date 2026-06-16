@@ -1,29 +1,29 @@
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
+const { BUCKET_NAME_FILES: BUCKET_NAME_FILES_GALLERY } = require('./constants');
 
-const GALLERY_BUCKET_NAME = 'zinovik-gallery';
-const HEDGEHOGS_BUCKET_NAME = 'hedgehogs';
+const GALLERY_BUCKET_NAME_JSONS = 'zinovik-gallery';
+const GALLERY_BUCKET_NAME_FILES = BUCKET_NAME_FILES_GALLERY;
+const HEDGEHOGS_BUCKET_NAME_JSONS = 'hedgehogs';
+const HEDGEHOGS_BUCKET_NAME_FILES = 'hedgehogs';
 
-// CHOOSE THE BUCKET
-const BUCKET_NAME = GALLERY_BUCKET_NAME;
-// const BUCKET_NAME = HEDGEHOGS_BUCKET_NAME;
+// CHOOSE THE BUCKETS
+const IS_GALLERY = true;
+
+const BUCKET_NAME_JSONS = IS_GALLERY
+    ? GALLERY_BUCKET_NAME_JSONS
+    : HEDGEHOGS_BUCKET_NAME_JSONS;
+const BUCKET_NAME_FILES = IS_GALLERY
+    ? GALLERY_BUCKET_NAME_FILES
+    : HEDGEHOGS_BUCKET_NAME_FILES;
 
 const CLEAN_UP_BATCH_SIZE = 100;
 const FILES_FILE_NAME = 'files.json';
 const HEDGEHOGS_FILE_NAME = 'hedgehogs.json';
 
-const FILES_TO_SAVE = [
-    ...(BUCKET_NAME === GALLERY_BUCKET_NAME
-        ? [
-              'albums.json',
-              FILES_FILE_NAME,
-              'sources-config.json',
-              'users.json',
-              'board-gigs',
-          ]
-        : []),
-    ...(BUCKET_NAME === HEDGEHOGS_BUCKET_NAME ? [HEDGEHOGS_FILE_NAME] : []),
-];
+const FILES_TO_SAVE = IS_GALLERY
+    ? ['albums.json', FILES_FILE_NAME, 'users.json']
+    : [HEDGEHOGS_FILE_NAME];
 
 const FORCE_REMOVE_PATHS = [];
 
@@ -131,23 +131,25 @@ const removeSoftDeletedFiles = async (bucket) => {
 };
 
 (async () => {
-    const storage = new Storage();
-    const bucket = storage.bucket(BUCKET_NAME);
+    const storageJsons = new Storage();
+    const storageFiles = new Storage();
+    const bucketJsons = storageJsons.bucket(BUCKET_NAME_JSONS);
+    const bucketFiles = storageFiles.bucket(BUCKET_NAME_FILES);
 
     console.log('Get filenames from file...');
-    const filenamesFromJson = await (BUCKET_NAME === GALLERY_BUCKET_NAME
-        ? getFilenamesFromFile(bucket)
-        : getFilenamesFromHedgehogs(bucket));
+    const filenamesFromJson = await (IS_GALLERY
+        ? getFilenamesFromFile(bucketJsons)
+        : getFilenamesFromHedgehogs(bucketJsons));
 
     console.log('Remove unrelated files...');
-    await removeUnrelatedFiles(bucket, [
+    await removeUnrelatedFiles(bucketFiles, [
         ...FILES_TO_SAVE,
         ...filenamesFromJson,
     ]);
 
     console.log('Remove old file versions...');
-    await removeOldFileVersions(bucket);
+    await removeOldFileVersions(bucketFiles);
 
     console.log('Remove soft deleted files...');
-    await removeSoftDeletedFiles(bucket);
+    await removeSoftDeletedFiles(bucketFiles);
 })();

@@ -7,12 +7,10 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "backup": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/1-backup-json-files-to-local",
         "add": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/2-update-files-json.js",
-        "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-upload-files-to-storage",
-        "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-sync-storage-filenames",
+        "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-sync-storage-filenames",
+        "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-upload-files-to-storage",
         "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-storage-files",
-        "access": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/6-update-file-accesses",
-        "urls": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/7-update-sources-config",
-        "start": "npm run backup && npm run add && npm run upload && npm run clean && npm run access && npm run urls"
+        "start": "npm run backup && npm run add && npm run rename && npm run upload && npm run clean"
     },
     "author": "",
     "license": "ISC",

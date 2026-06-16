@@ -14,7 +14,7 @@ const UPDATE_SORT_ALBUM_FILES =
 // const UPDATE_SORT_ALBUM_FILES =
 //     'http://localhost:8080/edit/update-sort-albums-files';
 
-const BUCKET_NAME = 'zinovik-gallery';
+const BUCKET_NAME_JSONS = 'zinovik-gallery';
 const FILES_FILE_NAME = 'files.json';
 const PHOTOS_PATH = '/home/max/photos';
 
@@ -29,7 +29,7 @@ const getAllLocalFilePaths = async (filesPath) => {
     return treeOutput.split('\n');
 };
 
-const getFiles = async (bucket) => {
+const getFilesFromJson = async (bucket) => {
     const file = await bucket.file(FILES_FILE_NAME).download();
 
     return JSON.parse(file.toString());
@@ -108,10 +108,10 @@ const removeFiles = (updatedFiles, allLocalFilePaths) => {
 
 (async () => {
     const storage = new Storage();
-    const bucket = storage.bucket(BUCKET_NAME);
+    const bucket = storage.bucket(BUCKET_NAME_JSONS);
 
     console.log('get files...');
-    const files = await getFiles(bucket);
+    const files = await getFilesFromJson(bucket);
 
     console.log('get new local files to add...');
     const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);

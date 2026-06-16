@@ -2,8 +2,7 @@ const { exec } = require('child_process');
 const { promisify } = require('util');
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
-
-const BUCKET_NAME = 'zinovik-gallery';
+const { BUCKET_NAME_FILES } = require('./constants');
 
 const RENAME_BATCH_SIZE = 20;
 const PHOTOS_PATH = '/home/max/photos';
@@ -78,7 +77,7 @@ const renameFiles = async (bucket, renameFilenamesPairs) => {
 
 (async () => {
     const storage = new Storage();
-    const bucket = storage.bucket(BUCKET_NAME);
+    const bucket = storage.bucket(BUCKET_NAME_FILES);
 
     console.log('Get exiting file paths...');
     const exitingStorageFilePaths = await getExitingStorageFilePaths(bucket);
