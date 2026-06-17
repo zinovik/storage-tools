@@ -9,7 +9,7 @@ const SYNC_DIRECTORIES = JSON.parse(
 );
 
 const UPDATE_SORT_ALBUM_FILES =
-    'https://gallery-api-306312319198.europe-central2.run.app/edit/update-sort-albums-files';
+    'https://gallery-api-278546267214.europe-central2.run.app/edit/update-sort-albums-files';
 
 // const UPDATE_SORT_ALBUM_FILES =
 //     'http://localhost:8080/edit/update-sort-albums-files';
