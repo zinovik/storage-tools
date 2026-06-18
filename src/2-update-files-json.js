@@ -49,11 +49,10 @@ const getNewFilesGroups = (allLocalFilePaths, syncDirectories) =>
         path:
             syncDirectory.path ||
             syncDirectory.localPathPart
-                .replaceAll(' ', '-')
-                .replaceAll("'", '-')
-                .replaceAll(',', '')
-                .replaceAll('(', '')
-                .replaceAll(')', '')
+                .trim()
+                .replace(/[(),]/g, '')
+                .replace(/[\s']+/g, '-')
+                .replace(/-+/g, '-')
                 .toLowerCase(),
         accesses: syncDirectory.accesses || [],
     }));

@@ -1,60 +1,27 @@
+const { exec } = require('child_process');
+const { promisify } = require('util');
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
 const { BUCKET_NAME_FILES: BUCKET_NAME_FILES_GALLERY } = require('./constants');
 
-const GALLERY_BUCKET_NAME_JSONS = 'zinovik-gallery';
-const GALLERY_BUCKET_NAME_FILES = BUCKET_NAME_FILES_GALLERY;
-const HEDGEHOGS_BUCKET_NAME_JSONS = 'hedgehogs';
-const HEDGEHOGS_BUCKET_NAME_FILES = 'hedgehogs';
-
-// CHOOSE THE BUCKETS
-const IS_GALLERY = true;
-
-const BUCKET_NAME_JSONS = IS_GALLERY
-    ? GALLERY_BUCKET_NAME_JSONS
-    : HEDGEHOGS_BUCKET_NAME_JSONS;
-const BUCKET_NAME_FILES = IS_GALLERY
-    ? GALLERY_BUCKET_NAME_FILES
-    : HEDGEHOGS_BUCKET_NAME_FILES;
+const PHOTOS_PATH = '/home/max/photos';
 
 const CLEAN_UP_BATCH_SIZE = 100;
-const FILES_FILE_NAME = 'files.json';
-const HEDGEHOGS_FILE_NAME = 'hedgehogs.json';
-
-const FILES_TO_SAVE = IS_GALLERY
-    ? ['albums.json', FILES_FILE_NAME, 'users.json']
-    : [HEDGEHOGS_FILE_NAME];
 
 const FORCE_REMOVE_PATHS = [];
 
 const getFilename = (filePath) => filePath.split('/').pop();
 
-const getFilenamesFromFile = async (bucket) => {
-    const file = await bucket.file(FILES_FILE_NAME).download();
-
-    return JSON.parse(file.toString())
-        .filter((file) =>
-            FORCE_REMOVE_PATHS.every(
-                (path) =>
-                    file.path !== path && !file.path.startsWith(`${path}/`)
-            )
-        )
-        .map((file) => file.filename);
-};
-
-const getFilenamesFromHedgehogs = async (bucket) => {
-    const file = await bucket.file(HEDGEHOGS_FILE_NAME).download();
-
-    return JSON.parse(file.toString()).reduce(
-        (acc, hedgehog) => [
-            ...acc,
-            ...hedgehog.photos.map((photoUrl) => getFilename(photoUrl)),
-        ],
-        []
+const getAllLocalFilenames = async (filesPath) => {
+    const { stdout: treeOutput } = await promisify(exec)(
+        `find  ${filesPath} -type f`,
+        { maxBuffer: 1024 * 1024 * 4 }
     );
+
+    return treeOutput.split('\n').map(getFilename);
 };
 
-// remove files that are not in files.json or not presented locally?
+// remove files that are not presented locally
 const removeUnrelatedFiles = async (bucket, filesToSave) => {
     const [exitingFiles] = await bucket.getFiles({ versions: true });
 
@@ -131,21 +98,14 @@ const removeSoftDeletedFiles = async (bucket) => {
 };
 
 (async () => {
-    const storageJsons = new Storage();
     const storageFiles = new Storage();
-    const bucketJsons = storageJsons.bucket(BUCKET_NAME_JSONS);
-    const bucketFiles = storageFiles.bucket(BUCKET_NAME_FILES);
+    const bucketFiles = storageFiles.bucket(BUCKET_NAME_FILES_GALLERY);
 
-    console.log('Get filenames from file...');
-    const filenamesFromJson = await (IS_GALLERY
-        ? getFilenamesFromFile(bucketJsons)
-        : getFilenamesFromHedgehogs(bucketJsons));
+    console.log('Get all local file names...');
+    const allLocalFilenames = await getAllLocalFilenames(PHOTOS_PATH);
 
     console.log('Remove unrelated files...');
-    await removeUnrelatedFiles(bucketFiles, [
-        ...FILES_TO_SAVE,
-        ...filenamesFromJson,
-    ]);
+    await removeUnrelatedFiles(bucketFiles, allLocalFilenames);
 
     console.log('Remove old file versions...');
     await removeOldFileVersions(bucketFiles);

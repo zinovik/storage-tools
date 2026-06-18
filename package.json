@@ -15,8 +15,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@google-cloud/storage": "7.12.1",
-        "google-auth-library": "9.14.1"
+        "@google-cloud/firestore": "8.6.0",
+        "@google-cloud/storage": "7.21.0",
+        "google-auth-library": "10.7.0"
     },
     "devDependencies": {
         "stream-shift": "1.0.3"

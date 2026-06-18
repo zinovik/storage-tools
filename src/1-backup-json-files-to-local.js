@@ -9,7 +9,7 @@ const FILES = [
     'zinovik-gallery/users.json',
 ];
 
-const PATHS_TO_SAVE = ['/home/max/drive/json_backup/', '/home/max/projects/private/lists/'];
+const PATH_TO_SAVE = '/home/max/projects/private/lists/';
 
 const SYNC_DIRECTORIES_FILE = 'SYNC_DIRECTORIES.json';
 
@@ -21,19 +21,15 @@ FILES.forEach(async (path) => {
     const bucket = storage.bucket(bucketName);
     const file = await bucket.file(fileName).download();
 
-    PATHS_TO_SAVE.forEach((pathToSave) =>
-        fs.writeFileSync(
-            `${pathToSave}${fileName}`,
-            JSON.stringify(JSON.parse(file.toString()), null, 4)
-        )
+    fs.writeFileSync(
+        `${PATH_TO_SAVE}${fileName}`,
+        JSON.stringify(JSON.parse(file.toString()), null, 4)
     );
 
     console.log(`${path} was saved`);
 });
 
-PATHS_TO_SAVE.forEach((pathToSave) =>
-    fs.copyFileSync(
-        `./src/${SYNC_DIRECTORIES_FILE}`,
-        `${pathToSave}${SYNC_DIRECTORIES_FILE}`
-    )
+fs.copyFileSync(
+    `./src/${SYNC_DIRECTORIES_FILE}`,
+    `${PATH_TO_SAVE}${SYNC_DIRECTORIES_FILE}`
 );

@@ -1,17 +1,30 @@
 const { exec } = require('child_process');
 const { promisify } = require('util');
+const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
 const { BUCKET_NAME_FILES } = require('./constants');
 
-const BUCKET_NAME_JSONS = 'zinovik-gallery';
 const UPLOAD_BATCH_SIZE = 10;
 const FILES_FILE_NAME = 'files.json';
 const PHOTOS_PATH = '/home/max/photos';
 
-const SKIP_UPLOAD_PATHS = [];
+const localPathParts = JSON.parse(
+    fs.readFileSync('./src/SYNC_DIRECTORIES.json').toString()
+).map((sd) => sd.localPathPart);
 
 const getFilename = (filePath) => filePath.split('/').pop();
+
+const getAllSyncFilenames = (allLocalFilePaths, localPathParts) =>
+    localPathParts.flatMap((localPathPart) =>
+        allLocalFilePaths
+            .filter(
+                (localFilePath) =>
+                    localFilePath.includes(` - ${localPathPart}/`) ||
+                    localFilePath.includes(`/${localPathPart}/`)
+            )
+            .map(getFilename)
+    );
 
 const getFolderNameAndFilename = (filePath) => {
     const filePathParts = filePath.split('/');
@@ -23,14 +36,7 @@ const getFolderNameAndFilename = (filePath) => {
 const getFilenamesFromFile = async (bucket) => {
     const file = await bucket.file(FILES_FILE_NAME).download();
 
-    return JSON.parse(file.toString())
-        .filter((file) =>
-            SKIP_UPLOAD_PATHS.every(
-                (path) =>
-                    file.path !== path && !file.path.startsWith(`${path}/`)
-            )
-        )
-        .map((file) => file.filename);
+    return JSON.parse(file.toString()).map((file) => file.filename);
 };
 
 const getExitingStorageFilePaths = async (bucket) => {
@@ -72,8 +78,8 @@ const uploadFiles = async (bucket, filePaths, folder) => {
     );
 };
 
-const filterFilenames = (filenames, exitingFilenames) =>
-    filenames.filter(
+const filterFilenames = (allSyncFilenames, exitingFilenames) =>
+    allSyncFilenames.filter(
         (filenameFromJson) => !exitingFilenames.includes(filenameFromJson)
     );
 
@@ -83,13 +89,8 @@ const mapFilenamesToLocalFilePaths = (filenames, localFilePaths) =>
     );
 
 (async () => {
-    const storageJsons = new Storage();
     const storageFiles = new Storage();
-    const bucketJsons = storageJsons.bucket(BUCKET_NAME_JSONS);
     const bucketFiles = storageFiles.bucket(BUCKET_NAME_FILES);
-
-    console.log('Get filenames from file...');
-    const filenamesFromJson = await getFilenamesFromFile(bucketJsons);
 
     console.log('Get exiting filenames...');
     const exitingStorageFilePaths =
@@ -101,9 +102,14 @@ const mapFilenamesToLocalFilePaths = (filenames, localFilePaths) =>
     console.log('Get all local file paths...');
     const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);
 
-    // TODO: Upload all local files?
+    console.log('Filter all sync filenames...');
+    const allSyncFilenames = getAllSyncFilenames(
+        allLocalFilePaths,
+        localPathParts
+    );
+
     const localFilePathsToUpload = mapFilenamesToLocalFilePaths(
-        filterFilenames(filenamesFromJson, exitingStorageFilenames),
+        filterFilenames(allSyncFilenames, exitingStorageFilenames),
         allLocalFilePaths
     );
     console.log('Upload files...', localFilePathsToUpload);
