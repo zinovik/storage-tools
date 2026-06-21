@@ -6,7 +6,6 @@ const { performBatch } = require('./perform-batch');
 const { BUCKET_NAME_FILES } = require('./constants');
 
 const UPLOAD_BATCH_SIZE = 10;
-const FILES_FILE_NAME = 'files.json';
 const PHOTOS_PATH = '/home/max/photos';
 
 const localPathParts = JSON.parse(
@@ -31,12 +30,6 @@ const getFolderNameAndFilename = (filePath) => {
     const folderName = filePathParts[filePathParts.length - 2];
 
     return [folderName, getFilename(filePath)];
-};
-
-const getFilenamesFromFile = async (bucket) => {
-    const file = await bucket.file(FILES_FILE_NAME).download();
-
-    return JSON.parse(file.toString()).map((file) => file.filename);
 };
 
 const getExitingStorageFilePaths = async (bucket) => {

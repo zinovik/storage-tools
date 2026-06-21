@@ -4,9 +4,6 @@ const { Storage } = require('@google-cloud/storage');
 const FILES = [
     'digital-board-games/digital-board-games.json',
     'hedgehogs/hedgehogs.json',
-    'zinovik-gallery/albums.json',
-    'zinovik-gallery/files.json',
-    'zinovik-gallery/users.json',
 ];
 
 const PATH_TO_SAVE = '/home/max/projects/private/lists/';
