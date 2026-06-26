@@ -5,14 +5,15 @@
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "backupStorage": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/backup-storage-json-files-to-local",
+        "backup:storage": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/0-backup-storage-json-files-to-local",
         "rename": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/1-sync-storage-filenames",
         "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/2-upload-files-to-storage",
-        "clean": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-clean-up-storage-files",
+        "clean:files": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-clean-up-storage-files",
         "cache": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-invalidate-cache",
-        "start": "npm run rename && npm run upload && npm run clean && npm run cache",
-        "backupFirestore": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/backupFirestore",
-        "restoreFirestore": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/restoreFirestore"
+        "backup:firestore": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/0-backup-firestore-to-local-json-files",
+        "clean:db": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-firestore",
+        "restore:firestore": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/0-restore-firestore-from-local-json-files",
+        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files && npm run cache && npm run backup:firestore && npm run clean:db && npm run restore:firestore"
     },
     "author": "",
     "license": "ISC",
