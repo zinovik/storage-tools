@@ -10,7 +10,7 @@ const PHOTOS_PATH = '/home/max/photos';
 
 const localPathParts = JSON.parse(
     fs.readFileSync('./src/SYNC_DIRECTORIES.json').toString()
-).map((sd) => sd.localPathPart);
+);
 
 const getFilename = (filePath) => filePath.split('/').pop();
 
