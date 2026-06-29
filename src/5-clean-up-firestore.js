@@ -58,6 +58,10 @@ const filteredFiles = files.filter((file) => {
         path = path.substring(0, path.lastIndexOf('/'));
     }
 
+    if (!file.path && !albumWithDefaultAccesses)
+        albumWithDefaultAccesses =
+            albumsWithDefaultAccesses[filenamePathMap[file.filename]];
+
     if (!albumWithDefaultAccesses) return true;
 
     const shouldRemove =
@@ -86,6 +90,10 @@ const mappedFiles = filteredFiles.map((file) => {
 
         path = path.substring(0, path.lastIndexOf('/'));
     }
+
+    if (!file.path && !albumWithDefaultAccesses)
+        albumWithDefaultAccesses =
+            albumsWithDefaultAccesses[filenamePathMap[file.filename]];
 
     if (
         albumWithDefaultAccesses &&
