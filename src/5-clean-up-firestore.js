@@ -30,7 +30,7 @@ allLocalFilePaths.forEach((localFilePath) => {
         .join('/')
         .replace(/(?:^|\/)\d{4}\.\d{2}\.\d{2} - /, '')
         .trim()
-        .replace(/[(),]/g, '')
+        .replace(/[().,]/g, '')
         .replace(/[\s']+/g, '-')
         .replace(/-+/g, '-')
         .toLowerCase();
