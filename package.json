@@ -10,17 +10,17 @@
         "upload": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/2-upload-files-to-storage",
         "clean:files:storage": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/3-clean-up-storage-files",
         "cache": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-invalidate-cache",
-        "backup:firestore": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/0-backup-firestore-to-local-json-files",
-        "clean:db:json": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-firestore",
-        "restore:firestore": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/0-restore-firestore-from-local-json-files",
-        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage && npm run backup:firestore && npm run clean:db:json && npm run restore:firestore && npm run cache"
+        "clean:db:json": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-mongodb",
+        "backup:mongodb": "node src/0-backup-mongodb-to-local-json-files",
+        "restore:mongodb": "node src/0-restore-mongodb-from-local-json-files",
+        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@google-cloud/firestore": "8.6.0",
         "@google-cloud/storage": "7.21.0",
-        "google-auth-library": "10.7.0"
+        "google-auth-library": "10.7.0",
+        "mongoose": "9.7.3"
     },
     "devDependencies": {
         "stream-shift": "1.0.3"
