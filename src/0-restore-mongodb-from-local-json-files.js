@@ -1,5 +1,6 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
+const { FILES_MODELS } = require('./files-models');
 
 const line = fs
     .readFileSync('.env', 'utf8')
@@ -10,36 +11,12 @@ const MONGO_URI = rest.join('=').trim();
 
 const PATH_TO_READ = '/home/max/projects/private/lists';
 
-const FILES = [
-    {
-        filename: 'files',
-        model: mongoose.model(
-            'File',
-            new mongoose.Schema({}, { strict: false })
-        ),
-    },
-    {
-        filename: 'albums',
-        model: mongoose.model(
-            'Album',
-            new mongoose.Schema({}, { strict: false })
-        ),
-    },
-    {
-        filename: 'users',
-        model: mongoose.model(
-            'User',
-            new mongoose.Schema({}, { strict: false })
-        ),
-    },
-];
-
 (async () => {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(MONGO_URI);
     console.log('connected');
 
     await Promise.all(
-        FILES.map(async ({ filename, model }) => {
+        FILES_MODELS.map(async ({ filename, model }) => {
             const docs = JSON.parse(
                 fs.readFileSync(`${PATH_TO_READ}/${filename}.json`, 'utf8')
             );

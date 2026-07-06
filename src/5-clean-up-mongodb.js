@@ -135,6 +135,17 @@ const mappedAlbums = albums.map((album) => {
         delete album.accesses;
     }
 
+    if (
+        album.title ===
+        album.path
+            .split('/')
+            .slice(-1)[0]
+            .replace(/-/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase())
+    ) {
+        delete album.title;
+    }
+
     if (!album.text) delete album.text;
 
     return album;

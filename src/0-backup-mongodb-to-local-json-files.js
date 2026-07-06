@@ -1,5 +1,6 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
+const { FILES_MODELS } = require('./files-models');
 
 const line = fs
     .readFileSync('.env', 'utf8')
@@ -10,39 +11,12 @@ const MONGO_URI = rest.join('=').trim();
 
 const PATH_TO_SAVE = '/home/max/projects/private/lists';
 
-const FILES = [
-    {
-        filename: 'files',
-        model: mongoose.model(
-            'File',
-            new mongoose.Schema({}, { strict: false })
-        ),
-        sortBy: 'filename',
-    },
-    {
-        filename: 'albums',
-        model: mongoose.model(
-            'Album',
-            new mongoose.Schema({}, { strict: false })
-        ),
-        sortBy: 'path',
-    },
-    {
-        filename: 'users',
-        model: mongoose.model(
-            'User',
-            new mongoose.Schema({}, { strict: false })
-        ),
-        sortBy: 'email',
-    },
-];
-
 (async () => {
     await mongoose.connect(MONGO_URI);
     console.log('connected');
 
     await Promise.all(
-        FILES.map(async ({ filename, model, sortBy }) => {
+        FILES_MODELS.map(async ({ filename, model, sortBy }) => {
             const docs = await model.find(
                 {},
                 { _id: 0, __v: 0 },
@@ -54,8 +28,6 @@ const FILES = [
             );
 
             console.log(sortedDocs.length, filename);
-
-            // sort during request
 
             fs.writeFileSync(
                 `${PATH_TO_SAVE}/${filename}.json`,
