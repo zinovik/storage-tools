@@ -1,15 +1,24 @@
 const mongoose = require('mongoose');
 
-const fileSchema = new mongoose.Schema(
-    { filename: { type: String, required: true } },
-    { strict: false }
-);
+const fileSchema = new mongoose.Schema({
+    filename: { type: String, required: true },
+    path: { type: String, default: undefined },
+    description: { type: String, default: undefined },
+    text: { type: mongoose.Schema.Types.Mixed, default: undefined },
+    tags: { type: [String], default: undefined },
+    accesses: { type: [String], default: undefined },
+});
 fileSchema.index({ filename: 1 }, { unique: true });
 
-const albumSchema = new mongoose.Schema(
-    { path: { type: String, required: true } },
-    { strict: false }
-);
+const albumSchema = new mongoose.Schema({
+    path: { type: String, required: true },
+    title: { type: String, default: undefined },
+    text: { type: mongoose.Schema.Types.Mixed, default: undefined },
+    defaultByDate: { type: Boolean, default: undefined },
+    accesses: { type: [String], default: undefined },
+    defaultAccesses: { type: [String], default: undefined },
+    order: { type: Number, default: undefined },
+});
 albumSchema.index({ path: 1 }, { unique: true });
 
 const userSchema = new mongoose.Schema({

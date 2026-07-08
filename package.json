@@ -13,7 +13,7 @@
         "clean:db:json": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/5-clean-up-mongodb",
         "backup:mongodb": "node src/0-backup-mongodb-to-local-json-files",
         "restore:mongodb": "node src/0-restore-mongodb-from-local-json-files",
-        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage"
+        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage && npm run cache"
     },
     "author": "",
     "license": "ISC",
