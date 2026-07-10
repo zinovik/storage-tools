@@ -23,7 +23,19 @@ const PATH_TO_SAVE = '/home/max/projects/private/lists';
                 { lean: true }
             );
 
-            const sortedDocs = [...docs].sort((d1, d2) =>
+            const cleanDocs = [];
+
+            docs.forEach((doc) => {
+                delete doc.resolved;
+
+                if (Object.keys(doc).length <= 1) {
+                    return;
+                }
+
+                cleanDocs.push(doc);
+            });
+
+            const sortedDocs = [...cleanDocs].sort((d1, d2) =>
                 d1[sortBy].localeCompare(d2[sortBy])
             );
 

@@ -7,8 +7,15 @@ const fileSchema = new mongoose.Schema({
     text: { type: mongoose.Schema.Types.Mixed, default: undefined },
     tags: { type: [String], default: undefined },
     accesses: { type: [String], default: undefined },
+
+    resolved: {
+        accesses: { type: [String], default: undefined },
+        path: { type: String, default: undefined },
+        storagePath: { type: String, default: undefined },
+    },
 });
 fileSchema.index({ filename: 1 }, { unique: true });
+fileSchema.index({ 'resolved.path': 1 }, { unique: false });
 
 const albumSchema = new mongoose.Schema({
     path: { type: String, required: true },
@@ -18,6 +25,11 @@ const albumSchema = new mongoose.Schema({
     accesses: { type: [String], default: undefined },
     defaultAccesses: { type: [String], default: undefined },
     order: { type: Number, default: undefined },
+
+    resolved: {
+        accesses: { type: [String], default: undefined },
+        title: { type: String, default: undefined },
+    },
 });
 albumSchema.index({ path: 1 }, { unique: true });
 

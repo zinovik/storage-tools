@@ -1,16 +1,14 @@
 const { GoogleAuth } = require('google-auth-library');
 
-const INVALIDATE_CACHE_URL =
-    'https://gallery-api-278546267214.europe-central2.run.app/invalidate-cache';
-
-const INVALIDATE_CACHE_URL_LOCAL = 'http://localhost:8080/invalidate-cache';
+const URL = 'https://gallery-api-278546267214.europe-central2.run.app';
+const LOCAL_URL = 'http://localhost:8080';
 
 (async () => {
     const auth = new GoogleAuth();
-    const client = await auth.getIdTokenClient(INVALIDATE_CACHE_URL);
+    const client = await auth.getIdTokenClient(URL);
 
     const { data } = await client.request({
-        url: INVALIDATE_CACHE_URL,
+        url: `${URL}/resolve-new-storage-files`,
         method: 'POST',
     });
 
@@ -21,10 +19,10 @@ const INVALIDATE_CACHE_URL_LOCAL = 'http://localhost:8080/invalidate-cache';
 (async () => {
     try {
         const auth = new GoogleAuth();
-        const client = await auth.getIdTokenClient(INVALIDATE_CACHE_URL_LOCAL);
+        const client = await auth.getIdTokenClient(LOCAL_URL);
 
         const { data } = await client.request({
-            url: INVALIDATE_CACHE_URL_LOCAL,
+            url: `${LOCAL_URL}/resolve-new-storage-files`,
             method: 'POST',
         });
 
