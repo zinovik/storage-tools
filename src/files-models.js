@@ -29,6 +29,7 @@ const albumSchema = new mongoose.Schema({
     resolved: {
         accesses: { type: [String], default: undefined },
         title: { type: String, default: undefined },
+        order: { type: Number, default: undefined },
     },
 });
 albumSchema.index({ path: 1 }, { unique: true });
