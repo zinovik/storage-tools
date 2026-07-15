@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const fileSchema = new mongoose.Schema({
+const FileSchema = new mongoose.Schema({
     filename: { type: String, required: true },
     path: { type: String, default: undefined },
     description: { type: String, default: undefined },
@@ -12,12 +12,20 @@ const fileSchema = new mongoose.Schema({
         accesses: { type: [String], default: undefined },
         path: { type: String, default: undefined },
         storagePath: { type: String, default: undefined },
+        rootPath: { type: String, default: undefined },
     },
 });
-fileSchema.index({ filename: 1 }, { unique: true });
-fileSchema.index({ 'resolved.path': 1 }, { unique: false });
+FileSchema.index({ filename: 1 }, { unique: true });
+FileSchema.index(
+    { 'resolved.path': 1, 'resolved.accesses': 1 },
+    { unique: false }
+);
+FileSchema.index(
+    { 'resolved.rootPath': 1, 'resolved.accesses': 1 },
+    { unique: false }
+);
 
-const albumSchema = new mongoose.Schema({
+const AlbumSchema = new mongoose.Schema({
     path: { type: String, required: true },
     title: { type: String, default: undefined },
     text: { type: mongoose.Schema.Types.Mixed, default: undefined },
@@ -32,30 +40,31 @@ const albumSchema = new mongoose.Schema({
         order: { type: Number, default: undefined },
     },
 });
-albumSchema.index({ path: 1 }, { unique: true });
+AlbumSchema.index({ path: 1 }, { unique: true });
+AlbumSchema.index({ path: 1, 'resolved.accesses': 1 }, { unique: false });
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     email: { type: String, required: true },
     accesses: { type: [String], required: true },
     isEditAccess: { type: Boolean, required: true },
 });
-userSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ email: 1 }, { unique: true });
 
 module.exports = {
     FILES_MODELS: [
         {
             filename: 'files',
-            model: mongoose.model('File', fileSchema),
+            model: mongoose.model('File', FileSchema),
             sortBy: 'filename',
         },
         {
             filename: 'albums',
-            model: mongoose.model('Album', albumSchema),
+            model: mongoose.model('Album', AlbumSchema),
             sortBy: 'path',
         },
         {
             filename: 'users',
-            model: mongoose.model('User', userSchema),
+            model: mongoose.model('User', UserSchema),
             sortBy: 'email',
         },
     ],
