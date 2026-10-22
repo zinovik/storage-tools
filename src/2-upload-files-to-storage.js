@@ -8,9 +8,11 @@ const { BUCKET_NAME_FILES } = require('./constants');
 const UPLOAD_BATCH_SIZE = 10;
 const PHOTOS_PATH = '/home/max/photos';
 
-const localPathParts = JSON.parse(
-    fs.readFileSync('./src/SYNC_DIRECTORIES.json').toString()
-);
+const localPathParts = fs
+    .readFileSync('./src/SYNC_DIRECTORIES.txt')
+    .toString()
+    .split('\n')
+    .filter((line) => line.trim() !== '');
 
 const getFilename = (filePath) => filePath.split('/').pop();
 

@@ -8,7 +8,7 @@ const FILES = [
 
 const PATH_TO_SAVE = '/home/max/projects/private/lists/';
 
-const SYNC_DIRECTORIES_FILE = 'SYNC_DIRECTORIES.json';
+const SYNC_DIRECTORIES_FILE = 'SYNC_DIRECTORIES.txt';
 
 const storage = new Storage();
 

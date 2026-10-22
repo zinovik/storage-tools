@@ -17,9 +17,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@google-cloud/storage": "7.21.0",
-        "google-auth-library": "10.7.0",
-        "mongoose": "9.7.3"
+        "@google-cloud/storage": "8.4.0",
+        "google-auth-library": "11.3.1",
+        "mongoose": "9.11.3"
     },
     "devDependencies": {
         "stream-shift": "1.0.3"

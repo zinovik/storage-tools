@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 key-file.json
-SYNC_DIRECTORIES.json
+SYNC_DIRECTORIES.txt
