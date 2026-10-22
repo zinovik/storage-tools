@@ -12,7 +12,8 @@
         "resolve:new:files": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-resolve-new-storage-files",
         "backup:mongodb": "node src/0-backup-mongodb-to-local-json-files",
         "restore:mongodb": "node src/0-restore-mongodb-from-local-json-files",
-        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage && npm run resolve:new:files"
+        "sort": "sort -o src/SYNC_DIRECTORIES.txt src/SYNC_DIRECTORIES.txt",
+        "start": "npm run sort && npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage && npm run resolve:new:files"
     },
     "author": "",
     "license": "ISC",
