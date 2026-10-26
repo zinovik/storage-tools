@@ -12,15 +12,14 @@
         "resolve:new:files": "GOOGLE_APPLICATION_CREDENTIALS=key-file.json node src/4-resolve-new-storage-files",
         "backup:mongodb": "node src/0-backup-mongodb-to-local-json-files",
         "restore:mongodb": "node src/0-restore-mongodb-from-local-json-files",
-        "sort": "sort -o src/SYNC_DIRECTORIES.txt src/SYNC_DIRECTORIES.txt",
-        "start": "npm run sort && npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage && npm run resolve:new:files"
+        "start": "npm run backup:storage && npm run rename && npm run upload && npm run clean:files:storage && npm run resolve:new:files"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "@google-cloud/storage": "8.4.0",
         "google-auth-library": "11.3.1",
-        "mongoose": "9.11.3"
+        "mongoose": "9.11.4"
     },
     "devDependencies": {
         "stream-shift": "1.0.3"

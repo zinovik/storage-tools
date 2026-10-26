@@ -8,25 +8,20 @@ const FILES = [
 
 const PATH_TO_SAVE = '/home/max/projects/private/lists/';
 
-const SYNC_DIRECTORIES_FILE = 'SYNC_DIRECTORIES.txt';
-
 const storage = new Storage();
 
-FILES.forEach(async (path) => {
-    const [bucketName, fileName] = path.split('/');
+(async () => {
+    for (const path of FILES) {
+        const [bucketName, fileName] = path.split('/');
 
-    const bucket = storage.bucket(bucketName);
-    const file = await bucket.file(fileName).download();
+        const bucket = storage.bucket(bucketName);
+        const file = await bucket.file(fileName).download();
 
-    fs.writeFileSync(
-        `${PATH_TO_SAVE}${fileName}`,
-        JSON.stringify(JSON.parse(file.toString()), null, 4)
-    );
+        fs.writeFileSync(
+            `${PATH_TO_SAVE}${fileName}`,
+            JSON.stringify(JSON.parse(file.toString('utf8')), null, 4)
+        );
 
-    console.log(`${path} was saved`);
-});
-
-fs.copyFileSync(
-    `./src/${SYNC_DIRECTORIES_FILE}`,
-    `${PATH_TO_SAVE}${SYNC_DIRECTORIES_FILE}`
-);
+        console.log(`${path} was saved`);
+    }
+})();

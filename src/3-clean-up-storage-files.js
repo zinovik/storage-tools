@@ -1,50 +1,16 @@
-const { exec } = require('child_process');
-const { promisify } = require('util');
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
-const { BUCKET_NAME_FILES: BUCKET_NAME_FILES_GALLERY } = require('./constants');
-
-const PHOTOS_PATH = '/home/max/photos';
+const { BUCKET_NAME_FILES } = require('./constants');
+const { getLocalFilesNamesSet } = require('./get-local-files-paths');
+const {
+    getStorageExistingFiles,
+} = require('./get-storage-existing-files-paths');
 
 const CLEAN_UP_BATCH_SIZE = 100;
 
-const FORCE_REMOVE_PATHS = [];
-
 const getFilename = (filePath) => filePath.split('/').pop();
 
-const getAllLocalFilenames = async (filesPath) => {
-    const { stdout: treeOutput } = await promisify(exec)(
-        `find  ${filesPath} -type f`,
-        { maxBuffer: 1024 * 1024 * 4 }
-    );
-
-    return treeOutput.split('\n').map(getFilename);
-};
-
-// remove files that are not presented locally
-const removeUnrelatedFiles = async (bucket, filesToSave) => {
-    const [exitingFiles] = await bucket.getFiles({ versions: true });
-
-    const filesToRemove = exitingFiles
-        .filter((file) => !filesToSave.includes(getFilename(file.name)))
-        .map((file) =>
-            bucket.file(file.name, {
-                generation: file.generation,
-            })
-        );
-
-    console.log(filesToRemove.map((f) => f.id));
-    console.log(`Unrelated files to remove: ${filesToRemove.length}`);
-
-    await performBatch(
-        filesToRemove,
-        async (file) => await file.delete(),
-        CLEAN_UP_BATCH_SIZE,
-        'delete files'
-    );
-};
-
-const filterOldVersions = (files) => {
+const getCurrentVersionsMap = (files) => {
     const currentVersionMap = {};
 
     files.forEach((file) => {
@@ -55,39 +21,47 @@ const filterOldVersions = (files) => {
             currentVersionMap[file.name] = file.generation;
     });
 
-    return files.filter(
-        (file) => file.generation !== currentVersionMap[file.name]
-    );
+    return currentVersionMap;
 };
 
-const removeOldFileVersions = async (bucket) => {
-    const [exitingFiles] = await bucket.getFiles({ versions: true });
+(async () => {
+    const storageFiles = new Storage();
+    const bucket = storageFiles.bucket(BUCKET_NAME_FILES);
 
-    const filesToRemove = filterOldVersions(exitingFiles).map((file) =>
-        bucket.file(file.name, {
-            generation: file.generation,
-        })
+    const localFilenamesSet = await getLocalFilesNamesSet();
+
+    const storageExistingFiles = await getStorageExistingFiles(bucket, true);
+
+    const unrelatedFiles = storageExistingFiles.filter(
+        (storageFile) => !localFilenamesSet.has(getFilename(storageFile.name))
+    );
+    const softDeletedFiles = storageExistingFiles.filter(
+        (storageFile) => storageFile.metadata.timeDeleted
+    );
+    const currentVersionsMap = getCurrentVersionsMap(storageExistingFiles);
+    const oldFileVersions = storageExistingFiles.filter(
+        (file) => file.generation !== currentVersionsMap[file.name]
     );
 
-    console.log(filesToRemove.map((f) => f.id));
-    console.log(`Old file versions to remove: ${filesToRemove.length}`);
+    const filesToRemove = [
+        ...unrelatedFiles,
+        ...softDeletedFiles,
+        ...oldFileVersions,
+    ];
 
-    await Promise.all(filesToRemove.map((file) => file.delete()));
-};
+    if (filesToRemove.length === 0) {
+        console.log('No files to remove.');
+        return;
+    }
 
-const removeSoftDeletedFiles = async (bucket) => {
-    const [exitingFiles] = await bucket.getFiles({ versions: true });
+    console.log(unrelatedFiles.map((f) => f.id));
+    console.log(`Unrelated files to remove: ${unrelatedFiles.length}`);
 
-    const filesToRemove = exitingFiles
-        .filter((file) => file.metadata.timeDeleted)
-        .map((file) =>
-            bucket.file(file.name, {
-                generation: file.generation,
-            })
-        );
+    console.log(softDeletedFiles.map((f) => f.id));
+    console.log(`Soft deleted files to remove: ${softDeletedFiles.length}`);
 
-    console.log(filesToRemove.map((f) => f.id));
-    console.log(`Soft deleted files to remove: ${filesToRemove.length}`);
+    console.log(oldFileVersions.map((f) => f.id));
+    console.log(`Old file versions to remove: ${oldFileVersions.length}`);
 
     await performBatch(
         filesToRemove,
@@ -95,21 +69,4 @@ const removeSoftDeletedFiles = async (bucket) => {
         CLEAN_UP_BATCH_SIZE,
         'delete files'
     );
-};
-
-(async () => {
-    const storageFiles = new Storage();
-    const bucketFiles = storageFiles.bucket(BUCKET_NAME_FILES_GALLERY);
-
-    console.log('Get all local file names...');
-    const allLocalFilenames = await getAllLocalFilenames(PHOTOS_PATH);
-
-    console.log('Remove unrelated files...');
-    await removeUnrelatedFiles(bucketFiles, allLocalFilenames);
-
-    console.log('Remove old file versions...');
-    await removeOldFileVersions(bucketFiles);
-
-    console.log('Remove soft deleted files...');
-    await removeSoftDeletedFiles(bucketFiles);
 })();

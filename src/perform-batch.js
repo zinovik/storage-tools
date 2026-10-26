@@ -1,5 +1,7 @@
 module.exports = {
     performBatch: async (args, perform, batchSize, logName) => {
+        if (args.length === 0) return [];
+
         const results = [];
 
         for (let i = 0; i < args.length; i += batchSize) {

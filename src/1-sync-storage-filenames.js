@@ -1,11 +1,12 @@
-const { exec } = require('child_process');
-const { promisify } = require('util');
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
 const { BUCKET_NAME_FILES } = require('./constants');
+const { getLocalFilesPaths } = require('./get-local-files-paths');
+const {
+    getStorageExitingFilesPaths,
+} = require('./get-storage-existing-files-paths');
 
 const RENAME_BATCH_SIZE = 20;
-const PHOTOS_PATH = '/home/max/photos';
 
 const getFilename = (filePath) => filePath.split('/').pop();
 
@@ -16,31 +17,19 @@ const getFolderNameAndFilename = (filePath) => {
     return [folderName, getFilename(filePath)];
 };
 
-const getExitingStorageFilePaths = async (bucket) => {
-    const [exitingFiles] = await bucket.getFiles();
-
-    return exitingFiles.map((exitingFile) => exitingFile.name);
-};
-
-const getAllLocalFilePaths = async (filesPath) => {
-    const { stdout: treeOutput } = await promisify(exec)(
-        `tree ${filesPath} -f`,
-        { maxBuffer: 1024 * 1024 * 4 }
-    );
-
-    return treeOutput
-        .split('\n')
-        .map((filePath) => filePath.substring(filePath.indexOf(filesPath)));
-};
-
 const getRenameFilePathPairs = (exitingStorageFilePaths, allLocalFilePaths) => {
     const filePathPairs = [];
 
+    const localFilesMap = allLocalFilePaths.reduce((acc, localFilePath) => {
+        const localFilename = getFilename(localFilePath);
+        acc[localFilename] = localFilePath;
+
+        return acc;
+    }, {});
+
     exitingStorageFilePaths.forEach((exitingStorageFilePath) => {
         const exitingStorageFilename = getFilename(exitingStorageFilePath);
-        const localFilePath = allLocalFilePaths.find((localFilePath) =>
-            localFilePath.includes(exitingStorageFilename)
-        );
+        const localFilePath = localFilesMap[exitingStorageFilename];
 
         if (!localFilePath) return;
 
@@ -79,16 +68,22 @@ const renameFiles = async (bucket, renameFilenamesPairs) => {
     const storage = new Storage();
     const bucket = storage.bucket(BUCKET_NAME_FILES);
 
-    console.log('Get exiting file paths...');
-    const exitingStorageFilePaths = await getExitingStorageFilePaths(bucket);
+    const allLocalFilePaths = await getLocalFilesPaths();
 
-    console.log('Get all local file paths...');
-    const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);
+    const storageExistingFilesPaths = await getStorageExitingFilesPaths(bucket);
 
-    console.log('Rename files...');
     const renameFilePathPairs = getRenameFilePathPairs(
-        exitingStorageFilePaths,
+        storageExistingFilesPaths,
         allLocalFilePaths
     );
+
+    if (renameFilePathPairs.length === 0) {
+        console.log('No files to rename.');
+        return;
+    }
+
+    console.log('Rename files...');
+    console.time('Rename files');
     await renameFiles(bucket, renameFilePathPairs);
+    console.timeEnd('Rename files');
 })();

@@ -1,31 +1,14 @@
-const { exec } = require('child_process');
-const { promisify } = require('util');
-const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const { performBatch } = require('./perform-batch');
 const { BUCKET_NAME_FILES } = require('./constants');
+const { getLocalFilesPaths } = require('./get-local-files-paths');
+const {
+    getStorageExitingFilesPaths,
+} = require('./get-storage-existing-files-paths');
 
 const UPLOAD_BATCH_SIZE = 10;
-const PHOTOS_PATH = '/home/max/photos';
-
-const localPathParts = fs
-    .readFileSync('./src/SYNC_DIRECTORIES.txt')
-    .toString()
-    .split('\n')
-    .filter((line) => line.trim() !== '');
 
 const getFilename = (filePath) => filePath.split('/').pop();
-
-const getAllSyncFilenames = (allLocalFilePaths, localPathParts) =>
-    localPathParts.flatMap((localPathPart) =>
-        allLocalFilePaths
-            .filter(
-                (localFilePath) =>
-                    localFilePath.includes(` - ${localPathPart}/`) ||
-                    localFilePath.includes(`/${localPathPart}/`)
-            )
-            .map(getFilename)
-    );
 
 const getFolderNameAndFilename = (filePath) => {
     const filePathParts = filePath.split('/');
@@ -34,29 +17,12 @@ const getFolderNameAndFilename = (filePath) => {
     return [folderName, getFilename(filePath)];
 };
 
-const getExitingStorageFilePaths = async (bucket) => {
-    const [exitingFiles] = await bucket.getFiles();
-
-    return exitingFiles.map((exitingFile) => exitingFile.name);
-};
-
-const getAllLocalFilePaths = async (filesPath) => {
-    const { stdout: treeOutput } = await promisify(exec)(
-        `find  ${filesPath} -type f`,
-        { maxBuffer: 1024 * 1024 * 4 }
-    );
-
-    return treeOutput.split('\n');
-};
-
-const uploadFile = async (bucket, filePath, storageFolderName) => {
+const uploadFile = async (bucket, filePath) => {
     const [storageFolderNameFromPath, fileName] =
         getFolderNameAndFilename(filePath);
 
     await bucket.upload(filePath, {
-        destination: `${
-            storageFolderName || storageFolderNameFromPath
-        }/${fileName}`,
+        destination: `${storageFolderNameFromPath}/${fileName}`,
         public: false,
         metadata: {
             cacheControl: 'public, max-age=31536000',
@@ -64,49 +30,42 @@ const uploadFile = async (bucket, filePath, storageFolderName) => {
     });
 };
 
-const uploadFiles = async (bucket, filePaths, folder) => {
+const uploadFiles = async (bucket, filePaths) => {
     await performBatch(
         filePaths,
-        async (filePath) => await uploadFile(bucket, filePath, folder),
+        async (filePath) => await uploadFile(bucket, filePath),
         UPLOAD_BATCH_SIZE,
         'upload files'
     );
 };
 
-const filterFilenames = (allSyncFilenames, exitingFilenames) =>
-    allSyncFilenames.filter(
-        (filenameFromJson) => !exitingFilenames.includes(filenameFromJson)
-    );
-
-const mapFilenamesToLocalFilePaths = (filenames, localFilePaths) =>
-    filenames.map((filename) =>
-        localFilePaths.find((localFilePath) => localFilePath.includes(filename))
+const filterFilePaths = (allLocalFilePaths, exitingStorageFilenamesSet) =>
+    allLocalFilePaths.filter(
+        (localFilePath) =>
+            !exitingStorageFilenamesSet.has(getFilename(localFilePath))
     );
 
 (async () => {
-    const storageFiles = new Storage();
-    const bucketFiles = storageFiles.bucket(BUCKET_NAME_FILES);
+    const storage = new Storage();
+    const bucket = storage.bucket(BUCKET_NAME_FILES);
 
-    console.log('Get exiting filenames...');
-    const exitingStorageFilePaths =
-        await getExitingStorageFilePaths(bucketFiles);
-    const exitingStorageFilenames = exitingStorageFilePaths.map((filePath) =>
-        getFilename(filePath)
-    );
+    const allLocalFilePaths = await getLocalFilesPaths();
 
-    console.log('Get all local file paths...');
-    const allLocalFilePaths = await getAllLocalFilePaths(PHOTOS_PATH);
+    const storageExistingFilesPaths = await getStorageExitingFilesPaths(bucket);
 
-    console.log('Filter all sync filenames...');
-    const allSyncFilenames = getAllSyncFilenames(
+    console.log('Filtering local file paths...');
+    console.time('Filtering local file paths');
+    const localFilePathsToUpload = filterFilePaths(
         allLocalFilePaths,
-        localPathParts
+        new Set(storageExistingFilesPaths.map(getFilename))
     );
+    console.timeEnd('Filtering local file paths');
 
-    const localFilePathsToUpload = mapFilenamesToLocalFilePaths(
-        filterFilenames(allSyncFilenames, exitingStorageFilenames),
-        allLocalFilePaths
-    );
+    if (localFilePathsToUpload.length === 0) {
+        console.log('No new files to upload.');
+        return;
+    }
+
     console.log('Upload files...', localFilePathsToUpload);
-    await uploadFiles(bucketFiles, localFilePathsToUpload, null);
+    await uploadFiles(bucket, localFilePathsToUpload);
 })();
